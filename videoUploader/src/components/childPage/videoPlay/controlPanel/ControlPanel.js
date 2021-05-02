@@ -25,21 +25,25 @@ class ControlPanel extends Component {
       totalTime: 0,
       playState: PLAY_STATUS.STOP,
       maxVideo: {},
-      percent: 0,
     };
   }
 
   componentDidMount() {
     this.setMax();
+    
+    this.timelineEl = document.getElementById('control_panel_timeline')
+    this.timelineEl.value = 0
+    this.timelineEl.addEventListener('change', this.timelineOnChangeListener)
+    
   }
 
   componentWillUnmount() {
     this.props.tooglePlayMode(PLAY_MODES.SINGLE);
-    const el = document.getElementById(
-      this.state.maxVideo.id + this.state.maxVideo.name
-    );
-    if (el) {
-      el.removeEventListener("timeupdate", this.timeUpdateListener);
+    if (this.maxVideoEl) {
+      this.maxVideoEl.removeEventListener("timeupdate", this.timeUpdateListener);
+    }
+    if(this.timelineEl) {
+      this.timelineEl.removeEventListener('change', this.timelineOnChangeListener);
     }
   }
 
@@ -58,17 +62,19 @@ class ControlPanel extends Component {
     }
     this.setState({ totalTime: max, maxVideo: maxV });
 
-    const el = document.getElementById(maxV.id + maxV.name);
-    el.addEventListener("timeupdate", this.timeUpdateListener.bind(this, el));
+    // timeupdate listener on max lenth video
+    const videoEl = document.getElementById('control_panel_videoEl')
+    videoEl.setAttribute('src', 'http://localhost:8000' + maxV.video)
+    videoEl.setAttribute('type', maxV.file_type)
+    videoEl.addEventListener("timeupdate", this.timeUpdateListener);
+    this.maxVideoEl = videoEl
+
+    // this.maxVideoEl = document.getElementById(maxV.id + maxV.name);
+    // this.maxVideoEl.addEventListener("timeupdate", this.timeUpdateListener);
+
   };
 
-  timeUpdateListener = (el) => {
-    let t = parseInt(el.currentTime);
-    let p = (t / parseInt(this.state.maxVideo.duration)) * 100;
-    // console.log(t)
-    this.setState({ currentTime: t, percent: p });
-  };
-
+  
   convertSec = (sec) => {
     try {
       let measuredTime = new Date(null);
@@ -79,9 +85,10 @@ class ControlPanel extends Component {
       return "00:00:00";
     }
   };
-
+  
   playAll = () => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
+    this.maxVideoEl.play()
     const videos = this.props.videos;
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
@@ -89,9 +96,10 @@ class ControlPanel extends Component {
     }
     this.setState({ playState: PLAY_STATUS.PLAY });
   };
-
+  
   pauseAll = () => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
+    this.maxVideoEl.pause()
     const videos = this.props.videos;
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
@@ -99,9 +107,11 @@ class ControlPanel extends Component {
     }
     this.setState({ playState: PLAY_STATUS.PAUSE });
   };
-
+  
   stopAll = () => {
     this.props.tooglePlayMode(PLAY_MODES.SINGLE);
+    this.maxVideoEl.pause()
+    this.maxVideoEl.currentTime = 0
     const videos = this.props.videos;
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
@@ -110,12 +120,12 @@ class ControlPanel extends Component {
     }
     this.setState({ playState: PLAY_STATUS.STOP, currentTime: 0 });
   };
-
+  
   backwardForwardAll = (type, len) => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
     const videos = this.props.videos;
     var t = this.state.currentTime;
-
+    
     if (type === 0) {
       // backward
       t = t - len;
@@ -123,40 +133,46 @@ class ControlPanel extends Component {
       // forward
       t = t + len;
     }
-
+    
+    this.maxVideoEl.currentTime = t    
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
       videoEl.currentTime = t;
     }
     this.setState({ currentTime: t });
   };
-
+  
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// event listeners /////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
-  onChangeListener = (e) => {
-    const p = e.target.value;
-    const el = document.getElementById(
-      this.state.maxVideo.id + this.state.maxVideo.name
-    );
-    el.removeEventListener("timeupdate", this.timeUpdateListener);
+  timelineOnChangeListener = () => {
+    const val = this.timelineEl.value;
 
-    let m = Math.round((this.state.totalTime * p) / 100);
+    this.maxVideoEl.removeEventListener("timeupdate", this.timeUpdateListener);
+
+    let ct = Math.round((this.state.totalTime * val) / 100);
     const videos = this.props.videos;
+
+    this.maxVideoEl.currentTime = ct
     for (let i = 0; i < videos.length; i++) {
-      let videoEl = document.getElementById(videos[i].id + videos[i].name);
-      // console.log(videoEl.duration)
-      const d = videoEl.duration;
-      const t = parseInt((d * p) / 100);
-      videoEl.currentTime = t;
-      // console.log(t)
+      let el = document.getElementById(videos[i].id + videos[i].name);
+      const d = el.duration;
+      const t = parseInt((d * val) / 100);
+      el.currentTime = t;
     }
-    this.setState({ currentTime: m, percent: p });
-    el.addEventListener("timeupdate", this.timeUpdateListener);
+
+    this.setState({ currentTime: ct });
+    this.maxVideoEl.addEventListener("timeupdate", this.timeUpdateListener);
   };
 
-  onMouseUpListener = (e) => {
-    console.log(e.target.value);
+  timeUpdateListener = () => {
+    const maxV = this.state.maxVideo
+    
+    let t = parseInt(this.maxVideoEl.currentTime);
+    let p = (t / parseInt(maxV.duration)) * 100;
+    this.setState({ currentTime: t });
+    this.timelineEl.value = p
+
   };
 
   render() {
@@ -164,21 +180,18 @@ class ControlPanel extends Component {
       <div className={classes.controlPanel}>
         <div id="controlPanel_progressBar" className={classes.progressBar}>
           <input
+            id="control_panel_timeline"
             type="range"
-            onChange={this.onChangeListener}
-            onMouseUp={this.onMouseUpListener}
             className={classes.inputRange__slider}
             min="0"
             max="100"
-            step="0.1"
-            value={this.state.percent}
+            step="0.01"
           />
         </div>
 
         <div className={classes.controlers}>
           <span className={classes.currentTime}>
-            {" "}
-            {this.convertSec(this.state.currentTime)}{" "}
+            {this.convertSec(this.state.currentTime)}
           </span>
 
           <button
@@ -294,6 +307,16 @@ class ControlPanel extends Component {
             {this.convertSec(this.state.totalTime)}{" "}
           </span>
         </div>
+
+        <video
+          controls
+          width="500px"
+          id="control_panel_videoEl"
+          style={{ display: "none" }}
+          muted={true}
+          controls={false}
+          autoPlay={false}
+        ></video>
       </div>
     );
   }

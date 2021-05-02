@@ -110,12 +110,12 @@ class Videos(models.Model):
         if instance.tChild:
             child = TypicalChild.objects.get(id=instance.tChild.id)
             session = Sessions.objects.get(id=instance.session.id)
-            return f'typical/t_{child.sequence_no}_{child.unique_no}/sessions/{session.id}_{session.date}/videos/{instance.name}.{instance.file_extension}'
+            return f'typical/t_{child.sequence_no}_{child.unique_no}/sessions/{session.id}_{session.date}/videos/{instance.name}{instance.file_extension}'
 
         else:
             child = AntypicalChild.objects.get(id=instance.atChild.id)
             session = Sessions.objects.get(id=instance.session.id)
-            return f'antypical/at_{child.clinic_no}/sessions/{session.id}_{session.date}/videos/{instance.name}.{instance.file_extension}'
+            return f'antypical/at_{child.clinic_no}/sessions/{session.id}_{session.date}/videos/{instance.name}{instance.file_extension}'
 
     def __str__(self):
         return self.name

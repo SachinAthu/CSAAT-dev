@@ -92,3 +92,16 @@
   fill: rgba(0, 0, 0, 0.3);
   transform: scale(3);
 }
+
+@media(max-width: 1480px) {
+  .card_content{
+    min-height: 16rem;
+  }
+  .audioplay{
+    height: 162px;
+  }
+  .empty{
+    height: 16rem;
+  }
+
+}

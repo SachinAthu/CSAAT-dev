@@ -54,6 +54,10 @@ class AddVideo extends Component {
     this.fetchCameraAngles();
   }
 
+  componentWillUnmount() {
+
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// functions ///////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +83,7 @@ class AddVideo extends Component {
 
   // get the duration of selected video file
   getDuration = (file) => {
-    const videoEl = document.getElementById("videoEl");
+    const videoEl = document.getElementById("video_add_modal_videoEl");
     const objectUrl = URL.createObjectURL(file);
     videoEl.setAttribute("src", objectUrl);
     let time;
@@ -248,7 +252,9 @@ class AddVideo extends Component {
       .then((res) => {
         this.props.addVideo(res.data);
         this.setState({ loading: false, progressBar: false });
-        this.props.close();
+        setTimeout(() => {
+          this.props.close();
+        }, 1000)
       })
       .catch((thrown) => {
         if (axios.isCancel(thrown)) {
@@ -535,7 +541,7 @@ class AddVideo extends Component {
         <video
           controls
           width="500px"
-          id="videoEl"
+          id="video_add_modal_videoEl"
           style={{ display: "none" }}
         ></video>
       </ModalFrame>

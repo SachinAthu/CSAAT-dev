@@ -68,7 +68,7 @@ a:focus {
 
 /* container width  */
 .container {
-  max-width: 1325px !important;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -258,6 +258,23 @@ tr {
 
 /************************** data table ********************************/
 
+.rdt_Table{
+  min-width: 1170px !important;
+  overflow-x: auto !important;
+}
+
 .rdt_TableHeader{
   display: none !important;
+}
+
+
+/**************************** media quires ********************************/
+@media(max-width: 1480px) {
+  .container{
+    max-width: 1000px;
+  }
+
+  .rdt_Table{
+    min-width: 1140px !important;
+  }
 }
