@@ -1,0 +1,97 @@
+.container {
+  height: 18.5rem;
+}
+
+.card_content {
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  min-height: 18rem;
+}
+
+.videoplay {
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+
+}
+
+.videoplay > svg:hover {
+  fill: rgba(0, 156, 234, 0.6);
+}
+
+.info {
+  position: relative;
+  padding: 10px 10px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.info_1 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0 0 15px 0;
+}
+
+.info_1 > span {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+}
+
+.info_2 {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.removebtn {
+  width: 57px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0 1px;
+  padding: 4px 0px;
+}
+
+.removebtn {
+  background-color: #fff;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.removebtn:hover {
+  background-color: var(--color-danger);
+  color: #fff;
+}
+
+.empty {
+  width: 100%;
+  height: 18rem;
+  border: 2px dashed rgba(0, 0, 0, 0.3);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty button {
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.empty button svg {
+  fill: rgba(0, 0, 0, 0.3);
+  transform: scale(3);
+}
+
+@media(max-width: 1480px) {
+  .card_content{
+    min-height: 16rem;
+  }
+  .empty{
+    height: 16rem;
+  }
+}
