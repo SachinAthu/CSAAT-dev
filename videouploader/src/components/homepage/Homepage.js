@@ -6,16 +6,12 @@ import classes from "./Homepage.module.css";
 import { setNav } from "../../actions/NavigationActions";
 import { NAV_LINKS, CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, CHILD_TYPES } from "../../actions/Types";
 import { Link } from "react-router-dom";
-import HomePageImg from '../../assets/svg/homepage2.svg'
+import HomePageImg from '../../assets/svg/homepage.svg'
 
 class Homepage extends Component {
   static propTypes = {
     setNav: PropTypes.func.isRequired,
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   componentDidMount() {
     this.props.setNav(NAV_LINKS.NAV_HOME);
@@ -28,21 +24,11 @@ class Homepage extends Component {
         <h1>Upload Videos</h1>
 
         <div className={classes.tasks}>
-          <Link
-            to={{
-              pathname: "/t_children",
-              state: { childType: CHILD_TYPES.TYPICAL },
-            }}
-          >
+          <Link to="/t_children">
             &#10146; <span>Upload Typical Children Videos</span>
           </Link>
 
-          <Link
-            to={{
-              pathname: "/at_children",
-              state: { childType: CHILD_TYPES.ANTYPICAL },
-            }}
-          >
+          <Link to="/at_children">
             &#10146; <span>Upload Atypical Children Videos</span>
           </Link>
           
@@ -56,7 +42,7 @@ class Homepage extends Component {
         </div>
 
         <div className={classes.image}>
-          <img src={HomePageImg} alt="homepage image" />
+          <img src={HomePageImg} alt="homepage" />
         </div>
       </div>
     );

@@ -13,6 +13,7 @@ import DeleteConfirmPopup from "../modals/deleteConfirmAlert/DeleteConfirmAlert"
 import { BASE_URL } from "../../config";
 import ErrorBoundry from "../ErrorBoundry";
 import PageSpinner from "../layouts/spinners/page/PageSpinner";
+import SearchBar from '../layouts/searchBar/SearchBar'
 
 import { getCameras, deleteCameras } from "../../actions/CameraActions";
 import { deleteSessions } from "../../actions/SessionActions";
@@ -235,15 +236,7 @@ class Cameras extends Component {
 
         <div className={`container ${classes.container2}`}>
           <div className={classes.search_container}>
-            <form onSubmit={this.search} className={classes.form}>
-              <input
-                id="searchField"
-                name="searchField"
-                placeholder="Search cameras by any field..."
-                type="text"
-                onChange={this.onSearchValChange}
-              />
-            </form>
+            <SearchBar change={(e) => this.onSearchValChange(e)} />
 
             <button
               className={`button_primary ${classes.addbtn}`}

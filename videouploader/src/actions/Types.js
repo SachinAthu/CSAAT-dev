@@ -42,7 +42,6 @@ export const SET_ACTIVE_SESSION_FIRST = 'SET_ACTIVE_SESSION';
 export const UPDATE_ACTIVE_SESSION = 'UPDATE_ACTIVE_SESSION';
 
 
-
 // videos
 export const FETCH_VIDEOS = 'FETCH_VIDEOS';
 export const ADD_VIDEO = 'ADD_VIDEO';

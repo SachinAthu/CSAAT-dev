@@ -13,6 +13,7 @@ import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAle
 import { BASE_URL } from "../../../config";
 import ErrorBoundry from "../../ErrorBoundry";
 import PageSpinner from "../../layouts/spinners/page/PageSpinner";
+import SearchBar from '../../layouts/searchBar/SearchBar'
 
 import { getChildren, deleteChildren } from "../../../actions/ChildActions";
 import { deleteSessions } from "../../../actions/SessionActions";
@@ -20,15 +21,15 @@ import { deleteVideos } from "../../../actions/VideoActions";
 import { setNav } from "../../../actions/NavigationActions";
 import {
   CHILD_TYPES,
-  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME,
-  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
-  NAV_LINKS,
   CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+  NAV_LINKS,
 } from "../../../actions/Types";
 
-class Children extends Component {
+class TypicalChildren extends Component {
   static propTypes = {
     children: PropTypes.array.isRequired,
     getChildren: PropTypes.func.isRequired,
@@ -51,7 +52,7 @@ class Children extends Component {
       isSearching: false,
       loading: false,
     };
-    this.lastClick = 0
+    this.lastClick = 0;
   }
 
   componentDidMount() {
@@ -62,15 +63,15 @@ class Children extends Component {
     localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION);
 
     // set navigation link
-    this.props.setNav(NAV_LINKS.NAV_ATPICAL_CHILD);
+    this.props.setNav(NAV_LINKS.NAV_TYPICAL_CHILD);
     localStorage.setItem(
       CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
-      NAV_LINKS.NAV_ATPICAL_CHILD
+      NAV_LINKS.NAV_TYPICAL_CHILD
     );
 
     // store child type on localstorage
-    localStorage.setItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES.ANTYPICAL);
-    // fetch atypical children
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES.TYPICAL);
+    // fetch typical children
     this.fetchChildren();
 
     document.addEventListener("scroll", this.trackScrolling);
@@ -95,7 +96,7 @@ class Children extends Component {
       }
     }
   };
-
+  
   fetchChildren = (refresh = false) => {
     var delay = 20;
     if (this.lastClick >= (Date.now() - delay)){
@@ -106,15 +107,15 @@ class Children extends Component {
     let url = "";
     if(refresh) {
       this.props.deleteChildren()
-      url = `${BASE_URL}/at-children/`;
-    }else{
+      url = `${BASE_URL}/t-children/`;
+    }else {
       if (this.state.nextLink) {
         url = this.state.nextLink;
       } else {
-        url = `${BASE_URL}/at-children/`;
+        url = `${BASE_URL}/t-children/`;
       }
     }
-    if(this.props.children.length === 0) {
+    if(this.props.children.length == 0) {
       this.setState({ loading: true });
     }
     axios
@@ -136,7 +137,7 @@ class Children extends Component {
 
   filterChildren = (val) => {
     axios
-      .get(`${BASE_URL}/at-f-children/?search=${val}`)
+      .get(`${BASE_URL}/t-f-children/?search=${val}`)
       .then((res) => {
         this.props.getChildren(res.data);
       })
@@ -148,27 +149,32 @@ class Children extends Component {
 
     let columns = [
       {
-        name: "CLIENT NO",
-        selector: "clinic_no",
+        name: "Unique No",
+        selector: "unique_no",
         sortable: true,
       },
       {
-        name: "CHILD NAME",
+        name: "Sequence No",
+        selector: "sequence_no",
+        sortable: true,
+      },
+      {
+        name: "Child Name",
         selector: "name",
         sortable: true,
       },
       {
-        name: "DATE OF BIRTH",
+        name: "Date of Birth",
         selector: "dob",
         sortable: true,
       },
       {
-        name: "GENDER",
+        name: "Gender",
         selector: "gender",
         sortable: true,
       },
       {
-        name: "CONSENT DOCUMENT",
+        name: "Consent Document",
         sortable: false,
         cell: (row) => {
           if (row.cdoc) {
@@ -188,7 +194,7 @@ class Children extends Component {
         },
       },
       {
-        name: "DATA GATHERING FORM",
+        name: "Data Gathering Form",
         sortable: false,
         cell: (row) => {
           if (row.dgform) {
@@ -273,7 +279,8 @@ class Children extends Component {
         gender: children[i].gender,
         cdoc: children[i].cdoc,
         dgform: children[i].dgform,
-        clinic_no: children[i].clinic_no,
+        unique_no: children[i].unique_no,
+        sequence_no: children[i].sequence_no,
       };
       data.push(child);
     }
@@ -318,7 +325,7 @@ class Children extends Component {
   };
 
   onSearchValChange = (e) => {
-    const val = e.target.value;
+    const val = e.target.value 
 
     this.setState({ count: 0, prevLink: null, nextLink: null });
     this.props.deleteChildren();
@@ -354,7 +361,7 @@ class Children extends Component {
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, child.id);
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, child.name);
     this.props.history.push({
-      pathname: `/at_children/${child.id}`,
+      pathname: `/t_children/${child.id}`,
     });
   };
 
@@ -372,39 +379,26 @@ class Children extends Component {
   };
 
   render() {
-    const {
-      addOrEdit,
-      editChild,
-      deleting,
-      selectedRows,
-    } = this.state;
+    const { addOrEdit, editChild, deleting, selectedRows } = this.state;
 
     const table = this.createDataTable();
     const sub_links = [{ name: "Home", link: "/" }];
 
     return (
-      <div className={`${classes.container1}`}>
+      <Fragment>
         <Breadcrumbs
-          heading="Atypical Children"
+          heading="Typical Children"
           sub_links={sub_links}
-          current="Atypical Children"
+          current="Typical Children"
           state={null}
         />
 
-        <div className={`container ${classes.container2}`}>
+        <div className="container">
           <div className={classes.search_container}>
-            <form onSubmit={this.search} className={classes.form}>
-              <input
-                id="searchField"
-                name="searchField"
-                placeholder="Search children..."
-                type="text"
-                onChange={this.onSearchValChange}
-              />
-            </form>
+            <SearchBar change={(e) => this.onSearchValChange(e)} />
 
             <button
-              className={`button_primary ${classes.addbtn}`}
+              className={classes.addbtn}
               onClick={this.addChildHandler}
             >
               New Child
@@ -423,11 +417,8 @@ class Children extends Component {
                   <h6>There are no records available</h6>
                 </div>
               ) : (
-                <div
-                  id="atypical_children_table"
-                  className={`${classes.table}`}
-                >
-                   <div className={classes.table_info_refresh}>
+                <div id="typical_children_table" className={`${classes.table}`}>
+                  <div className={classes.table_info_refresh}>
                     <span>
                       Showing {this.props.children.length} out of {this.state.count} records
                     </span>
@@ -444,7 +435,7 @@ class Children extends Component {
                       </svg>
                     </button>
                   </div>
-
+                  
                   {table}
                 </div>
               )}
@@ -467,7 +458,7 @@ class Children extends Component {
             data={selectedRows}
           />
         ) : null}
-      </div>
+      </Fragment>
     );
   }
 }
@@ -482,4 +473,4 @@ export default connect(mapStateToProps, {
   deleteSessions,
   deleteChildren,
   setNav,
-})(Children);
+})(TypicalChildren);

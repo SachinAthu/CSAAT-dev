@@ -1,0 +1,24 @@
+.container {
+  width: 40%;
+  position: relative;
+}
+
+.container input {
+    width: 100%;
+  border-radius: 3px;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
+}
+
+.container input:focus {
+  outline: none;
+  outline-style: none;
+}
+
+.container > svg {
+  position: absolute;
+  top: 50%;
+  bottom: 50%;
+  right: 5px;
+  fill: rgba(0, 0, 0, 0.5);
+  transform: translateY(-50%) scale(0.8);
+}

@@ -1,0 +1,37 @@
+.filterDiv{
+    width: 100%;
+    margin-bottom: 100px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.videoGrid {
+    width: 100%;
+    height: auto;
+    margin: 5px 0;
+
+    display: flex;
+    flex-wrap: wrap;
+
+}
+
+.videoGrid > div{
+    flex: 24% 1;
+    max-width: 25%;
+    margin: 0 0.5%;
+}
+
+
+.emptyDiv {
+    width: 100%;
+    height: 5rem;
+}
+
+.emptyDiv {
+    width: 5rem;
+    margin: auto;
+}
+
+
