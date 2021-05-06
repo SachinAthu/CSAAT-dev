@@ -5,6 +5,7 @@ from .views import *
 urlpatterns = [
     path('', welcome, name='welcome'),
 
+
     path('t-children/', tChildren, name='t-children'),
     path('t-f-children/', TypicalChildrenListAPIView.as_view(), name='t-f-children'),
     path('t-child/<int:pk>/', tChild, name='t-child'),
@@ -13,6 +14,7 @@ urlpatterns = [
     path('delete-t-child/<int:pk>/', deleteTChild, name='delete-t-child'),
     path('delete-t-children/', deleteTChildren, name='delete-t-children'),
 
+
     path('at-children/', atChildren, name='t-children'),
     path('at-f-children/', AntypicalChildrenListAPIView.as_view(), name='at-f-children'),
     path('at-child/<int:pk>/', atChild, name='at-child'),
@@ -20,6 +22,7 @@ urlpatterns = [
     path('update-at-child/<int:pk>/', updateATChild, name='update-at-child'),
     path('delete-at-child/<int:pk>/', deleteATChild, name='delete-at-child'),
     path('delete-at-children/', deleteATChildren, name='delete-at-children'),
+
 
     path('sessions/', allSessions, name='all-sessions'),
     path('session/<int:pk>/', session, name='session'),
@@ -30,12 +33,20 @@ urlpatterns = [
     path('update-session/<int:pk>/', updateSession, name='update-session'),
     path('delete-session/<int:pk>/', deleteSession, name='delete-session'),
 
+
     path('videos/', allVideos, name='videos'),
     path('videos/<int:pk>/', sessionVideos, name='session-videos'),
+    path('s-videos/', allSlicedVideos, name='s-videos'),
+    path('us-videos/', allUnslicedVideos, name='un-videos'),
+
+    path('f-videos/', AllVideosListAPIView.as_view(), name='f-videos'),
+
+    path('video-info/<int:pk>/', getVideoInfo, name='video-info'),
     path('add-t-video/', addTVideo, name='add-t-video'),
     path('add-at-video/', addATVideo, name='add-at-video'),
     path('delete-video/<int:pk>/', deleteVideo, name='delete-video'),
     path('delete-videos/', deleteVideos, name='delete-videos'),
+
 
     path('audios/', allAudios, name='audios'),
     path('audio/<int:pk>/', sessionAudio, name='session-audio'),
@@ -44,6 +55,7 @@ urlpatterns = [
     path('delete-audio/<int:pk>/', deleteAudio, name='delete-audio'),
     path('delete-audios/', deleteAudios, name='delete-audios'),
 
+
     path('video-clips/', allVideoClips, name='all-video-clips'),
     path('video-clips/<int:pk>/', videoClips, name='video-clips'),
     path('video-clip/<int:pk>/', videoClip, name='video-clip'),
@@ -51,12 +63,14 @@ urlpatterns = [
     path('delete-video-clip/<int:pk>/', deleteVideoClip, name='delete-video-clip'),
     path('delete-video-clips/', deleteVideoClips, name='delete-video-clips'),
 
+
     path('cameras/', cameras, name='cameras'),
     path('f-cameras/', CamerasListAPIView.as_view(), name='f-cameras'),
     path('camera/<int:pk>/', camera, name='camera'),
     path('add-camera/', addCamera, name='add-camera'),
     path('delete-camera/<int:pk>/', deleteCamera, name='delete-camera'),
     path('delete-cameras/', deleteCameras, name='delete-cameras'),
+
 
     path('camera-angles/', cameraAngles, name='camera-angles'),
     path('f-camera-angles/', CameraAnglesListAPIView.as_view(), name='f-camera-angles'),

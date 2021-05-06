@@ -23,6 +23,9 @@ class VideoPlayer extends Component {
 
   componentWillUnmount() {
     const el = document.getElementById(this.props.video.id + this.props.video.name)
+    // el.pause(0)
+    // el.src = ""
+    // el.load()
     el.remove()
   }
 

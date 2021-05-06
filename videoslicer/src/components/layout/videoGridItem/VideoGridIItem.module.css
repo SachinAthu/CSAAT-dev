@@ -1,8 +1,10 @@
 .container {
+  position: relative;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
 }
 
 .player {
+  min-height: 164px;
 }
 
 .info {
@@ -31,7 +33,6 @@
 }
 
 .details {
-  position: relative;
   margin-left: auto;
 
   display: flex;
@@ -44,15 +45,8 @@
   cursor: pointer;
 }
 
-.tooltip {
-  position: absolute;
-  visibility: hidden;
-  transition: all 0.2s;
-  z-index: 1000;
-}
-
-.details:hover .tooltip {
-  visibility: visible;
+.show{
+  display: block;
 }
 
 .select_btn {
@@ -69,4 +63,22 @@
 .select_btn:hover {
   background-color: rgba(0, 0, 0, 0.3);
   color: #fff;
+}
+
+@media(max-width: 1480px) {
+  .player {
+    min-height: 136px;
+  }
+}
+
+@media(max-width: 1300px) {
+  .player {
+    min-height: 172px;
+  }
+}
+
+@media(max-width: 1200px) {
+  .player {
+    min-height: 157px;
+  }
 }

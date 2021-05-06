@@ -39,7 +39,7 @@
   flex-direction: column;
 }
 
-.table_info_refresh{
+.table_info_refresh {
   max-width: 500px;
   margin-bottom: 10px;
   align-self: flex-end;
@@ -49,23 +49,23 @@
   justify-content: space-around;
 }
 
-.table_info_refresh > span{
+.table_info_refresh > span {
   font-size: 14px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.8);
 }
 
-.table_info_refresh > button{
+.table_info_refresh > button {
   background-color: transparent;
   padding: 5px 10px;
-  margin-left: 5px;
+  margin: 3px 0 0 5px;
 }
 
-.table_info_refresh > button:hover{
+.table_info_refresh > button:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.table_info_refresh > button > svg{
+.table_info_refresh > button > svg {
   transform: scale(1);
   fill: rgba(0, 0, 0, 0.5);
 }
@@ -81,7 +81,8 @@
   cursor: pointer;
 }
 
-.viewDocbtn:hover {
+.viewDocbtn:hover,
+.viewDocbtn:focus {
   color: #fff;
   background-color: rgba(0, 0, 0, 0.4);
   text-decoration: none;
@@ -146,4 +147,9 @@
   width: 18rem;
   margin-top: 10px;
   margin-bottom: 30px;
+}
+
+.empty_table h6 {
+  font-size: 14px;
+  font-weight: 600;
 }

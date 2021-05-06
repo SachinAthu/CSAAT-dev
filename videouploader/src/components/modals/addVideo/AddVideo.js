@@ -254,7 +254,7 @@ class AddVideo extends Component {
         this.setState({ loading: false, progressBar: false });
         setTimeout(() => {
           this.props.close();
-        }, 1000)
+        }, 2000)
       })
       .catch((thrown) => {
         if (axios.isCancel(thrown)) {

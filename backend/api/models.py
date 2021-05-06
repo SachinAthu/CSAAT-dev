@@ -121,9 +121,9 @@ class Videos(models.Model):
         return self.name
 
     tChild = models.ForeignKey(
-        TypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default='')
+        TypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default=None)
     atChild = models.ForeignKey(
-        AntypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default='')
+        AntypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default=None)
     session = models.ForeignKey(
         Sessions, on_delete=models.CASCADE, null=False, related_name='videos', default='')
     name = models.CharField(max_length=100, blank=True, null=True)
@@ -175,7 +175,7 @@ class VideoClips(models.Model):
     video_id = models.ForeignKey(
         Videos, on_delete=models.CASCADE, related_name='video_clips')
     name = models.CharField(max_length=200, blank=False, null=False)
-    video_clip = models.FileField(upload_to='video_clips',
+    video = models.FileField(upload_to='video_clips',
                              max_length=100, blank=True, null=True)
     duration = models.DurationField(blank=True, null=True)
 

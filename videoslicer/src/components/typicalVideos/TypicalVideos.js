@@ -17,6 +17,8 @@ import { getVideos, deleteVideos } from "../../actions/VideoActions";
 import { setNav } from "../../actions/NavigationActions";
 import {
   CSAAT_VIDEO_SLICE_ACTIVE_NAV,
+  CSAAT_VIDEO_SLICE_CHILDTYPE,
+  CHILD_TYPES,
   NAV_LINKS,
   TABS,
 } from "../../actions/Types";
@@ -37,6 +39,7 @@ class TypicalVideos extends Component {
       prevLink: null,
       isSearching: false,
       loading: false,
+      tab: ''
     };
     this.lastClick = 0;
   }
@@ -52,7 +55,10 @@ class TypicalVideos extends Component {
       NAV_LINKS.NAV_TYPICAL_VIDEO
     );
 
-    this.fetchVideos();
+    // set the child type
+    localStorage.setItem(CSAAT_VIDEO_SLICE_CHILDTYPE, CHILD_TYPES.TYPICAL);
+
+    this.fetchVideos(`${BASE_URL}/us-videos/`);
 
     document.addEventListener("scroll", this.trackScrolling);
   }
@@ -72,27 +78,28 @@ class TypicalVideos extends Component {
     ) {
       // fetch more records
       if (!this.state.isSearching) {
-        //this.fetchVideos();
+        if(this.state.nextLink){
+          this.fetchVideos(this.state.nextLink);
+        }
       }
     }
   };
 
-  fetchVideos = () => {
+  fetchVideos = (url) => {
     var delay = 20;
     if (this.lastClick >= Date.now() - delay) {
       return;
     }
     this.lastClick = Date.now();
 
-    let url = `${BASE_URL}/videos/`;
-    if (this.props.videos.length == 0) {
+    if (this.props.videos && this.props.videos.length == 0) {
       this.setState({ loading: true });
     }
     axios
       .get(url)
       .then((res) => {
         const data = res.data;
-        this.props.getVideos(data);
+        this.props.getVideos(data.results);
         this.setState({
           count: data.count,
           prevLink: data.previous,
@@ -107,7 +114,25 @@ class TypicalVideos extends Component {
   };
 
   tabChange = (tab) => {
-    console.log(tab);
+    this.setState({ tab: tab })
+    this.props.deleteVideos();
+
+    let url = "";
+    switch (tab) {
+      case TABS.ALL:
+        url = `${BASE_URL}/videos/`;
+        break;
+      case TABS.SLICED:
+        url = `${BASE_URL}/s-videos/`;
+        break;
+      case TABS.UNSLICED:
+        url = `${BASE_URL}/us-videos/`;
+        break;
+      default:
+        return;
+    }
+
+    this.fetchVideos(url);
   };
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -137,16 +162,31 @@ class TypicalVideos extends Component {
             <Search change={(e) => this.searchValChange(e)} />
           </div>
 
-          {videos && videos.length > 0 ? (
-            <div className={classes.videoGrid}>
-              {videos.map((v, i) => (
-                <VideoGridIItem key={i} video={v} history={this.props.history} />
-              ))}
+          {this.state.loading ? (
+            <div className={classes.loading_div}>
+              <PageSpinner />
             </div>
           ) : (
-            <div className={classes.emptyDiv}>
-              <img src={EmptySVG} alt="No videos" />
-            </div>
+            <Fragment>
+              {videos && videos.length > 0 ? (
+                <div className={classes.videoGrid}>
+                  {/* <VideoGridIItem video={videos[0]} history={this.props.history} /> */}
+                  {videos.map((v, i) => (
+                    <VideoGridIItem
+                      key={i}
+                      video={v}
+                      history={this.props.history}
+                      tab={this.state.tab}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className={classes.emptyDiv}>
+                  <img src={EmptySVG} alt="No videos" />
+                  <h6>There are no records available</h6>
+                </div>
+              )}
+            </Fragment>
           )}
         </div>
       </Fragment>

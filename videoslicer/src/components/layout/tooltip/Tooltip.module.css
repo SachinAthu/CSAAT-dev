@@ -1,6 +1,28 @@
 .container {
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 3px;
-    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.2s;
+  min-height: 5rem;
+  min-width: 10rem;
+  width: max-content;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 3px;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.container span {
+  font-size: 12px;
+  font-weight: 400;
+  margin: 1.5px 0;
+}
+
+.container > p {
+  margin: auto;
+  font-size: 12px;
 }

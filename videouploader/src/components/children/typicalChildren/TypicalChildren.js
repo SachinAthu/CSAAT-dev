@@ -13,7 +13,7 @@ import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAle
 import { BASE_URL } from "../../../config";
 import ErrorBoundry from "../../ErrorBoundry";
 import PageSpinner from "../../layouts/spinners/page/PageSpinner";
-import SearchBar from '../../layouts/searchBar/SearchBar'
+import SearchBar from "../../layouts/searchBar/SearchBar";
 
 import { getChildren, deleteChildren } from "../../../actions/ChildActions";
 import { deleteSessions } from "../../../actions/SessionActions";
@@ -92,30 +92,30 @@ class TypicalChildren extends Component {
     ) {
       // fetch more records
       if (!this.state.isSearching) {
-        this.fetchChildren();
+        this.fetchChildren(false, true);
       }
     }
   };
-  
-  fetchChildren = (refresh = false) => {
+
+  fetchChildren = (refresh = false, pagination = false) => {
     var delay = 20;
-    if (this.lastClick >= (Date.now() - delay)){
+    if (this.lastClick >= Date.now() - delay) {
       return;
     }
-    this.lastClick = Date.now()
+    this.lastClick = Date.now();
 
     let url = "";
-    if(refresh) {
-      this.props.deleteChildren()
+    if (refresh) {
+      this.props.deleteChildren();
       url = `${BASE_URL}/t-children/`;
-    }else {
+    } else {
       if (this.state.nextLink) {
         url = this.state.nextLink;
       } else {
         url = `${BASE_URL}/t-children/`;
       }
     }
-    if(this.props.children.length == 0) {
+    if (!pagination) {
       this.setState({ loading: true });
     }
     axios
@@ -136,9 +136,11 @@ class TypicalChildren extends Component {
   };
 
   filterChildren = (val) => {
+    this.setState({ loading: true });
     axios
       .get(`${BASE_URL}/t-f-children/?search=${val}`)
       .then((res) => {
+        this.setState({ loading: false });
         this.props.getChildren(res.data);
       })
       .catch((err) => {});
@@ -325,7 +327,7 @@ class TypicalChildren extends Component {
   };
 
   onSearchValChange = (e) => {
-    const val = e.target.value 
+    const val = e.target.value;
 
     this.setState({ count: 0, prevLink: null, nextLink: null });
     this.props.deleteChildren();
@@ -397,10 +399,7 @@ class TypicalChildren extends Component {
           <div className={classes.search_container}>
             <SearchBar change={(e) => this.onSearchValChange(e)} />
 
-            <button
-              className={classes.addbtn}
-              onClick={this.addChildHandler}
-            >
+            <button className={classes.addbtn} onClick={this.addChildHandler}>
               New Child
             </button>
           </div>
@@ -413,16 +412,22 @@ class TypicalChildren extends Component {
             <Fragment>
               {this.props.children.length === 0 ? (
                 <div className={`${classes.empty_table}`}>
-                  <img src={EmptySVG} alt="No records image" />
+                  <img src={EmptySVG} alt="No records" />
                   <h6>There are no records available</h6>
                 </div>
               ) : (
                 <div id="typical_children_table" className={`${classes.table}`}>
                   <div className={classes.table_info_refresh}>
-                    <span>
-                      Showing {this.props.children.length} out of {this.state.count} records
-                    </span>
-                    <button onClick={this.fetchChildren.bind(this, true)}>
+                    {this.state.isSearching ? (
+                      <span>Showing {this.props.children.length} records</span>
+                    ) : (
+                      <span>
+                        Showing {this.props.children.length} out of{" "}
+                        {this.state.count} records
+                      </span>
+                    )}
+
+                    <button onClick={this.fetchChildren.bind(this, true, false)}>
                       <svg
                         version="1.1"
                         xmlns="http://www.w3.org/2000/svg"
@@ -435,7 +440,7 @@ class TypicalChildren extends Component {
                       </svg>
                     </button>
                   </div>
-                  
+
                   {table}
                 </div>
               )}

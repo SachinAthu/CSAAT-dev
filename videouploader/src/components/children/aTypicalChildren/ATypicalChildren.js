@@ -13,7 +13,7 @@ import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAle
 import { BASE_URL } from "../../../config";
 import ErrorBoundry from "../../ErrorBoundry";
 import PageSpinner from "../../layouts/spinners/page/PageSpinner";
-import SearchBar from '../../layouts/searchBar/SearchBar'
+import SearchBar from "../../layouts/searchBar/SearchBar";
 
 import { getChildren, deleteChildren } from "../../../actions/ChildActions";
 import { deleteSessions } from "../../../actions/SessionActions";
@@ -52,7 +52,7 @@ class Children extends Component {
       isSearching: false,
       loading: false,
     };
-    this.lastClick = 0
+    this.lastClick = 0;
   }
 
   componentDidMount() {
@@ -92,30 +92,31 @@ class Children extends Component {
     ) {
       // fetch more records
       if (!this.state.isSearching) {
-        this.fetchChildren();
+        this.fetchChildren(false, true);
       }
     }
   };
 
-  fetchChildren = (refresh = false) => {
+  fetchChildren = (refresh = false, pagination = false) => {
     var delay = 20;
-    if (this.lastClick >= (Date.now() - delay)){
+    if (this.lastClick >= Date.now() - delay) {
       return;
     }
-    this.lastClick = Date.now()
+    this.lastClick = Date.now();
 
     let url = "";
-    if(refresh) {
-      this.props.deleteChildren()
+    if (refresh) {
+      this.props.deleteChildren();
       url = `${BASE_URL}/at-children/`;
-    }else{
+    } else {
       if (this.state.nextLink) {
         url = this.state.nextLink;
       } else {
         url = `${BASE_URL}/at-children/`;
       }
     }
-    if(this.props.children.length === 0) {
+    
+    if (!pagination) {
       this.setState({ loading: true });
     }
     axios
@@ -136,9 +137,11 @@ class Children extends Component {
   };
 
   filterChildren = (val) => {
+    this.setState({ loading: true });
     axios
       .get(`${BASE_URL}/at-f-children/?search=${val}`)
       .then((res) => {
+        this.setState({ loading: false });
         this.props.getChildren(res.data);
       })
       .catch((err) => {});
@@ -373,12 +376,7 @@ class Children extends Component {
   };
 
   render() {
-    const {
-      addOrEdit,
-      editChild,
-      deleting,
-      selectedRows,
-    } = this.state;
+    const { addOrEdit, editChild, deleting, selectedRows } = this.state;
 
     const table = this.createDataTable();
     const sub_links = [{ name: "Home", link: "/" }];
@@ -420,11 +418,19 @@ class Children extends Component {
                   id="atypical_children_table"
                   className={`${classes.table}`}
                 >
-                   <div className={classes.table_info_refresh}>
-                    <span>
-                      Showing {this.props.children.length} out of {this.state.count} records
-                    </span>
-                    <button onClick={this.fetchChildren.bind(this, true)}>
+                  <div className={classes.table_info_refresh}>
+                    {this.state.isSearching ? (
+                      <span>
+                        Showing {this.props.children.length} records
+                      </span>
+                    ) : (
+                      <span>
+                        Showing {this.props.children.length} out of{" "}
+                        {this.state.count} records
+                      </span>
+                    )}
+
+                    <button onClick={this.fetchChildren.bind(this, true, false)}>
                       <svg
                         version="1.1"
                         xmlns="http://www.w3.org/2000/svg"

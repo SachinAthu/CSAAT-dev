@@ -8,7 +8,7 @@ const SearchBar = (props) => {
       <input
         id="searchField"
         name="searchField"
-        placeholder="Search children by any field..."
+        placeholder="Search children by unique no, sequence no, clinic no"
         type="text"
         onChange={props.change}
       />
