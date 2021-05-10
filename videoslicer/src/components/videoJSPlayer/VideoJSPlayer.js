@@ -6,6 +6,8 @@ import "@videojs/themes/dist/forest/index.css";
 
 class VideoJSPlayer extends Component {
   componentDidMount() {
+    const n = Math.random() * 1000000
+    
     // instantiate Video.js
     const videoJsOptions = {
       autoplay: false,
@@ -18,7 +20,7 @@ class VideoJSPlayer extends Component {
       loop: false,
       sources: [
         {
-          src: "http://localhost:8000" + this.props.video.video,
+          src: `http://localhost:8000${this.props.video.video}/?${n}`, 
           type: this.props.video.file_type,
         },
       ],

@@ -3,10 +3,6 @@ import React, { Component } from "react";
 import classes from "./ModalFrame.module.css";
 
 class ModalFrame extends Component {
-  constructor(props) {
-    super(props)
-  }
-  
   componentDidMount() {
     if(this.props.player) {
       const container = document.getElementsByClassName(`${classes.container}`)[0]

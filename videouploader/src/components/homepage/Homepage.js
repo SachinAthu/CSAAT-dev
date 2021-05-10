@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 import classes from "./Homepage.module.css";
 import { setNav } from "../../actions/NavigationActions";
-import { NAV_LINKS, CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, CHILD_TYPES } from "../../actions/Types";
+import { NAV_LINKS, CSAAT_VIDEO_UPLOAD_ACTIVE_NAV } from "../../actions/Types";
 import { Link } from "react-router-dom";
 import HomePageImg from '../../assets/svg/homepage.svg'
 

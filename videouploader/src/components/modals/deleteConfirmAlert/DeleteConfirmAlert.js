@@ -16,13 +16,14 @@ import {
 import { getVideos, deleteVideo } from "../../../actions/VideoActions";
 import {
   CHILD_TYPES,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
   CSAAT_VIDEO_UPLOAD_CHILDTYPE,
 } from "../../../actions/Types";
 import { getAudio, deleteAudio } from "../../../actions/AudioActions";
 import { deleteCamera } from "../../../actions/CameraActions";
 import { deleteCameraAngle } from "../../../actions/CameraAngleActions";
 
-class DeleteConformPopup extends Component {
+class DeleteConfirmAlert extends Component {
   static propTypes = {
     activeSession: PropTypes.object,
     setActiveSession: PropTypes.func.isRequired,
@@ -58,80 +59,92 @@ class DeleteConformPopup extends Component {
       url = `${BASE_URL}/delete-at-child`;
     }
 
-    for (let i = 0; i < profiles.length; i++) {
-      try {
+    try {
+      for (let i = 0; i < profiles.length; i++) {
         let res = await axios.delete(`${url}/${profiles[i].id}`);
         this.props.deleteChild(profiles[i].id);
-        this.setState({ isError: false });
-      } catch (err) {
-        if (err) {
-          this.setState({ isError: true });
-        }
       }
+      this.setState({ deleting: false });
+      this.setState({ isError: false });
+      setTimeout(() => {
+        this.props.close();
+      }, 1000);
+    } catch (err) {
+      this.setState({ deleting: false });
+      this.setState({ isError: true });
     }
 
-    this.setState({ deleting: false });
-    this.props.close();
   };
 
-  deleteSession = (sessionId = this.props.data) => {
+  deleteSession = async (sessionId = this.props.data) => {
     this.setState({ deleting: true });
 
-    axios
-      .delete(`${BASE_URL}/delete-session/${sessionId}`)
-      .then((res) => {
-        this.setState({ deleting: false });
-        this.setState({ isError: false });
+    try {
+      var res = await axios.delete(`${BASE_URL}/delete-session/${sessionId}`);
 
-        const s = this.props.sessions.filter((s, i) => s.id != sessionId);
-        // set active session
+      this.setState({ deleting: false });
+      this.setState({ isError: false });
+
+      const s = this.props.sessions.filter((s, i) => s.id != sessionId);
+      // set active session
+      if (s[0]) {
         this.props.setActiveSession(s[0]);
+        localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, s[0].id);
+      }
 
-        // delete session from redux store
-        this.props.deleteSession(sessionId);
+      // delete session from redux store
+      this.props.deleteSession(sessionId);
 
+      if (s[0]) {
         // fetch audio for the selected session from DB
-        axios
-          .get(`${BASE_URL}/audio/${s[0].id}/`)
-          .then((res) => {
-            this.props.getAudio(res.data[0]);
-          })
-          .catch((err) => {});
+        var res = await axios.get(`${BASE_URL}/audio/${s[0].id}/`);
+        if (res) {
+          this.props.getAudio(res.data[0]);
+        }
 
         // fetch videos for the selected session from DB
-        axios
-          .get(`${BASE_URL}/videos/${s[0].id}/`)
-          .then((res) => {
-            this.props.getVideos(res.data);
-          })
-          .catch((err) => {});
-      })
-      .catch((err) => {
-        this.setState({ isError: true });
-      });
+        var res = axios.get(`${BASE_URL}/videos/${s[0].id}/`);
+        if (res) {
+          this.props.getVideos(res.data);
+        }
+      }
 
-    this.setState({ deleting: false });
-    setTimeout(() => {
-      this.props.close();
-    }, 200);
+      this.setState({ deleting: false });
+      this.setState({ isError: false });
+      setTimeout(() => {
+        this.props.close();
+      }, 1000);
+    } catch (err) {
+      // console.log(err);
+      this.setState({ isError: true });
+    }
+
   };
 
   deleteVideo = (videoId = this.props.data) => {
     this.setState({ deleting: true });
 
     axios
-      .delete(`${BASE_URL}/delete-video/${videoId}`)
+      .delete(`${BASE_URL}/delete-video/${videoId}/`)
       .then((res) => {
+        this.setState({ deleting: false });
         this.setState({ isError: false });
         // remove from redux store
         this.props.deleteVideo(videoId);
+        // const videoEl = document.getElementById()
+        // if(videoEl){
+        //   videoEl.remove()
+        // }
+        setTimeout(() => {
+          this.props.close();
+        }, 1000);
       })
       .catch((err) => {
+        // console.log(err)
+        this.setState({ deleting: false });
         this.setState({ isError: true });
       });
 
-    this.setState({ deleting: false });
-    this.props.close();
   };
 
   deleteAudio = (audioId = this.props.data) => {
@@ -140,60 +153,63 @@ class DeleteConformPopup extends Component {
     axios
       .delete(`${BASE_URL}/delete-audio/${audioId}/`)
       .then((res) => {
+        this.setState({ deleting: false });
         this.setState({ isError: false });
         // remove from redux store
         this.props.deleteAudio(audioId);
+        setTimeout(() => {
+          this.props.close();
+        }, 1000);
       })
       .catch((err) => {
+        this.setState({ deleting: false });
         this.setState({ isError: true });
       });
 
-    this.setState({ deleting: false });
-    this.props.close();
   };
 
   deleteCameras = async (cameras = this.props.data) => {
     this.setState({ deleting: true });
 
-    for (let i = 0; i < cameras.length; i++) {
-      try {
+    try{
+      for (let i = 0; i < cameras.length; i++) {
         let res = await axios.delete(
           `${BASE_URL}/delete-camera/${cameras[i].id}`
         );
         this.props.deleteCamera(cameras[i].id);
-        this.setState({ isError: false });
-      } catch (err) {
-        if (err) {
-          this.setState({ deleting: true });
-          this.setState({ isError: true });
-        }
       }
+      this.setState({ deleting: false });
+      this.setState({ isError: false });
+      setTimeout(() => {
+        this.props.close();
+      }, 1000);
+    }catch(err){
+      this.setState({ deleting: false });
+      this.setState({ isError: true });
     }
 
-    this.setState({ deleting: false });
-    this.props.close();
   };
 
   deleteCameraAngles = async (cameraAngles = this.props.data) => {
     this.setState({ deleting: true });
 
-    for (let i = 0; i < cameraAngles.length; i++) {
-      try {
+    try{
+      for (let i = 0; i < cameraAngles.length; i++) {
         let res = await axios.delete(
           `${BASE_URL}/delete-camera-angle/${cameraAngles[i].id}`
         );
         this.props.deleteCameraAngle(cameraAngles[i].id);
+        this.setState({ deleting: false });
         this.setState({ isError: false });
-      } catch (err) {
-        if (err) {
-          this.setState({ deleting: true });
-          this.setState({ isError: true });
-        }
+        setTimeout(() => {
+          this.props.close();
+        }, 1000);
       }
+    }catch(err){
+      this.setState({ deleting: false });
+      this.setState({ isError: true });
     }
 
-    this.setState({ deleting: false });
-    this.props.close();
   };
 
   /////////////////////////////////////////////////////
@@ -281,4 +297,4 @@ export default connect(mapStateToProps, {
   deleteAudio,
   deleteCamera,
   deleteCameraAngle,
-})(DeleteConformPopup);
+})(DeleteConfirmAlert);

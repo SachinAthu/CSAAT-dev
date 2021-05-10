@@ -22,7 +22,7 @@ import {
   TABS,
 } from "../../actions/Types";
 
-class TypicalVideos extends Component {
+class AtypicalVideos extends Component {
   static propTypes = {
     videos: PropTypes.array.isRequired,
     getVideos: PropTypes.func.isRequired,
@@ -38,36 +38,36 @@ class TypicalVideos extends Component {
       prevLink: null,
       isSearching: false,
       loading: false,
-      tab: TABS.UNSLICED,
+      tab: TABS.UNSLICED
     };
     this.lastClick = 0;
-    this.searchVal = "";
-    this.timeout = null;
+    this.searchVal = ''
+    this.timeout = null
   }
 
   componentDidMount() {
-    this.mounted = true;
+    this.mounted = true
 
     // clear redux store
     this.props.deleteVideos();
 
     // set navigation link
-    this.props.setNav(NAV_LINKS.NAV_TYPICAL_VIDEO);
+    this.props.setNav(NAV_LINKS.NAV_ATPICAL_VIDEO);
     localStorage.setItem(
       CSAAT_VIDEO_SLICE_ACTIVE_NAV,
-      NAV_LINKS.NAV_TYPICAL_VIDEO
+      NAV_LINKS.NAV_ATPICAL_VIDEO
     );
 
     // set the child type
-    localStorage.setItem(CSAAT_VIDEO_SLICE_CHILDTYPE, CHILD_TYPES.TYPICAL);
+    localStorage.setItem(CSAAT_VIDEO_SLICE_CHILDTYPE, CHILD_TYPES.ANTYPICAL);
 
-    this.fetchVideos(`${BASE_URL}/t-us-videos/`);
+    this.fetchVideos(`${BASE_URL}/at-us-videos/`);
 
     document.addEventListener("scroll", this.trackScrolling);
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this.mounted = false
     document.removeEventListener("scroll", this.trackScrolling);
   }
 
@@ -82,7 +82,7 @@ class TypicalVideos extends Component {
     ) {
       // fetch more records
       if (!this.state.isSearching) {
-        if (this.state.nextLink) {
+        if(this.state.nextLink){
           this.fetchVideos(this.state.nextLink);
         }
       }
@@ -90,7 +90,7 @@ class TypicalVideos extends Component {
   };
 
   fetchVideos = async (url) => {
-    if (!this.mounted) return;
+    if(!this.mounted) return
 
     var delay = 20;
     if (this.lastClick >= Date.now() - delay) {
@@ -112,35 +112,35 @@ class TypicalVideos extends Component {
         nextLink: data.next,
         loading: false,
       });
-    }catch(err){
+    }catch(err) {
       // console.log(err);
       this.setState({ loading: false });
     }
-
+    
   };
 
   filterVideos = async (val) => {
-    if (!this.mounted) return;
-
+    if(!this.mounted) return
+    
     // clearTimeout(this.timeout)
     // this.timeout = null
 
-    let url = "";
+    let url = ''
     switch (this.state.tab) {
       case TABS.ALL:
-        url = `${BASE_URL}/t-f-videos/?search=${val}`;
+        url = `${BASE_URL}/at-f-videos/?search=${val}`;
         break;
       case TABS.SLICED:
-        url = `${BASE_URL}/t-s-f-videos/?search=${val}`;
+        url = `${BASE_URL}/at-s-f-videos/?search=${val}`;
         break;
       case TABS.UNSLICED:
-        url = `${BASE_URL}/t-us-f-videos/?search=${val}`;
+        url = `${BASE_URL}/at-us-f-videos/?search=${val}`;
         break;
       default:
-        // console.log("not match");
+        // console.log('not match')
         return;
     }
-    this.setState({ loading: true });
+    this.setState({ loading: true })
 
     try{
       const res = await axios.get(url)
@@ -148,25 +148,25 @@ class TypicalVideos extends Component {
       // console.log(res.data)
       this.props.getVideos(res.data);
     }catch(err) {
-      // console.log(err);
+      // console.log(err)
     }
 
-  };
+  }
 
   tabChange = (tab) => {
-    this.setState({ tab: tab });
+    this.setState({ tab: tab })
     this.props.deleteVideos();
 
     let url = "";
     switch (tab) {
       case TABS.ALL:
-        url = `${BASE_URL}/t-videos/`;
+        url = `${BASE_URL}/at-videos/`;
         break;
       case TABS.SLICED:
-        url = `${BASE_URL}/t-s-videos/`;
+        url = `${BASE_URL}/at-s-videos/`;
         break;
       case TABS.UNSLICED:
-        url = `${BASE_URL}/t-us-videos/`;
+        url = `${BASE_URL}/at-us-videos/`;
         break;
       default:
         return;
@@ -185,35 +185,36 @@ class TypicalVideos extends Component {
 
     // this.timeout = setTimeout(() => {
     // }, 500)
-
-    this.setState({ count: 0, prevLink: null, nextLink: null });
-    this.props.deleteVideos();
-
-    if (val === "") {
+    
+    this.setState({ count: 0, prevLink: null, nextLink: null })
+    this.props.deleteVideos()
+  
+    if(val === ""){
       // load all data
-      this.setState({ isSearching: false });
-      let url = "";
+      this.setState({ isSearching: false })
+      let url = ''
       switch (this.state.tab) {
         case TABS.ALL:
-          url = `${BASE_URL}/t-videos/`;
+          url = `${BASE_URL}/at-videos/`;
           break;
         case TABS.SLICED:
-          url = `${BASE_URL}/t-s-videos/`;
+          url = `${BASE_URL}/at-s-videos/`;
           break;
         case TABS.UNSLICED:
-          url = `${BASE_URL}/t-us-videos/`;
+          url = `${BASE_URL}/at-us-videos/`;
           break;
         default:
           return;
       }
-      this.fetchVideos(url);
-    } else {
+      this.fetchVideos(url)
+    }else{
       // load filtered data
-      this.setState({ isSearching: true });
-      this.filterVideos(val);
+      this.setState({ isSearching: true })
+      this.filterVideos(val)
     }
-  };
 
+  };
+  
   render() {
     const videos = this.props.videos;
     const sub_links = [{ name: "Home", link: "/" }];
@@ -221,9 +222,9 @@ class TypicalVideos extends Component {
     return (
       <Fragment>
         <Breadcrumbs
-          heading="Typical Videos"
+          heading="Atypical Videos"
           sub_links={sub_links}
-          current="Typical Videos"
+          current="Atypical Videos"
           state={null}
         />
 
@@ -281,5 +282,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getVideos, deleteVideos, setNav })(
-  TypicalVideos
+  AtypicalVideos
 );

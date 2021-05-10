@@ -11,8 +11,6 @@ export default function (state = initialState, action) {
                 ...state,
                 currentNav: action.data
             }
-            break
-
         default:
             return state
 

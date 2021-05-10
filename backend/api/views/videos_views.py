@@ -13,19 +13,30 @@ from api.models import Videos, Sessions, Cameras, CameraAngles, TypicalChild, An
 from api.serializers import VideosSerializer
 
 
-# get all videos
+# get all videos for typical children
 @api_view(['GET'])
-def allVideos(request):
+def allTVideos(request):
     paginator = PageNumberPagination()
     paginator.page_size = 20
 
-    video_list = Videos.objects.all().order_by('-id')
+    video_list = Videos.objects.all().exclude(tChild__isnull=True).order_by('-id')
+    result_page = paginator.paginate_queryset(video_list, request)
+    serializer = VideosSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+# get all videos of antypical children
+@api_view(['GET'])
+def allATVideos(request):
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+
+    video_list = Videos.objects.all().exclude(atChild__isnull=True).order_by('-id')
     result_page = paginator.paginate_queryset(video_list, request)
     serializer = VideosSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
 
-# get all videos for a session
+# get all videos of a session
 @api_view(['GET'])
 def sessionVideos(request, pk):
     session = Sessions.objects.get(id=pk)
@@ -34,37 +45,107 @@ def sessionVideos(request, pk):
     return Response(serializer.data)
 
 
-# get all sliced videos
+# get all sliced videos of typical children
 @api_view(['GET'])
-def allSlicedVideos(request):
+def allTSlicedVideos(request):
     paginator = PageNumberPagination()
     paginator.page_size = 20
 
-    video_list = Videos.objects.filter(sliced__exact=True).order_by('-id')
+    video_list = Videos.objects.filter(sliced__exact=True).exclude(tChild__isnull=True).order_by('-id')
+    result_page = paginator.paginate_queryset(video_list, request)
+    serializer = VideosSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+# get all sliced videos of atypical children
+@api_view(['GET'])
+def allATSlicedVideos(request):
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+
+    video_list = Videos.objects.filter(sliced__exact=True).exclude(atChild__isnull=True).order_by('-id')
     result_page = paginator.paginate_queryset(video_list, request)
     serializer = VideosSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
 
-# get all unsliced videos
+# get all unsliced videos of typical children
 @api_view(['GET'])
-def allUnslicedVideos(request):
+def allTUnslicedVideos(request):
     paginator = PageNumberPagination()
     paginator.page_size = 20
 
-    video_list = Videos.objects.filter(sliced__exact=False).order_by('-id')
+    video_list = Videos.objects.filter(sliced__exact=False).exclude(tChild__isnull=True).order_by('-id')
+    result_page = paginator.paginate_queryset(video_list, request)
+    serializer = VideosSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+# get all unsliced videos of typical children
+@api_view(['GET'])
+def allATUnslicedVideos(request):
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+
+    video_list = Videos.objects.filter(sliced__exact=False).exclude(atChild__isnull=True).order_by('-id')
     result_page = paginator.paginate_queryset(video_list, request)
     serializer = VideosSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
 
-# filter values in all videos
-class AllVideosListAPIView(generics.ListAPIView):
-    queryset = Videos.objects.all().order_by('-id')
+# filter values in all videos of typical children
+class AllTVideosListAPIView(generics.ListAPIView):
+    queryset = Videos.objects.all().exclude(tChild__isnull=True).order_by('-id')
     serializer_class = VideosSerializer
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['camera_name', 'camera_angle_name', 'session__date', 'tChild__name', 'tChild__unique_no', 'tChild__sequence_no', 'atChild__name', 'atChild__clinic_no']
+
+# filter values in sliced videos of typical children
+class SlicedTVideosListAPIView(generics.ListAPIView):
+    queryset = Videos.objects.filter(sliced__exact=True).exclude(tChild__isnull=True).order_by('-id')
+    serializer_class = VideosSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['camera_name', 'camera_angle_name', 'session__date', 'tChild__name', 'tChild__unique_no', 'tChild__sequence_no', 'atChild__name', 'atChild__clinic_no']
+
+# filter values in unsliced videos of typical children
+class UnslicedTVideosListAPIView(generics.ListAPIView):
+    queryset = Videos.objects.filter(sliced__exact=False).exclude(tChild__isnull=True).order_by('-id')
+    serializer_class = VideosSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['camera_name', 'camera_angle_name', 'session__date', 'tChild__name', 'tChild__unique_no', 'tChild__sequence_no', 'atChild__name', 'atChild__clinic_no']
+
+# filter values in all videos of atypical children
+class AllATVideosListAPIView(generics.ListAPIView):
+    queryset = Videos.objects.all().exclude(atChild__isnull=True).order_by('-id')
+    serializer_class = VideosSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['camera_name', 'camera_angle_name', 'session__date', 'tChild__name', 'tChild__unique_no', 'tChild__sequence_no', 'atChild__name', 'atChild__clinic_no']
+
+# filter values in sliced videos of atypical children
+class SlicedATVideosListAPIView(generics.ListAPIView):
+    queryset = Videos.objects.filter(sliced__exact=True).exclude(atChild__isnull=True).order_by('-id')
+    serializer_class = VideosSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['camera_name', 'camera_angle_name', 'session__date', 'tChild__name', 'tChild__unique_no', 'tChild__sequence_no', 'atChild__name', 'atChild__clinic_no']
+
+# filter values in unsliced videos of atypical children
+class UnslicedATVideosListAPIView(generics.ListAPIView):
+    queryset = Videos.objects.filter(sliced__exact=False).exclude(atChild__isnull=True).order_by('-id')
+    serializer_class = VideosSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['camera_name', 'camera_angle_name', 'session__date', 'tChild__name', 'tChild__unique_no', 'tChild__sequence_no', 'atChild__name', 'atChild__clinic_no']
+
+
+# get single video
+@api_view(['GET'])
+def getVideo(request, pk):
+    video = Videos.objects.get(id=pk)
+    serializer = VideosSerializer(video, many=False)
+    return Response(serializer.data)
 
 
 # get single video details
@@ -182,6 +263,10 @@ def deleteVideo(request, pk):
             if default_storage.exists(video.video.path):
                 default_storage.delete(video.video.path)
                 res += 'video file was deleted. '
+        if video.thumbnail:
+            if default_storage.exists(video.thumbnail.path):
+                default_storage.delete(video.thumbnail.path)
+                res += 'video thumbnail was deleted. '
     except:
         res = 'error, something went wrong!'
 
@@ -200,7 +285,10 @@ def deleteVideos(request):
             if v.video:
                 if default_storage.exists(v.video.path):
                     default_storage.delete(v.video.path)
-        res = 'all Videos were deleted(records, files)'
+            if video.thumbnail:
+                if default_storage.exists(v.thumbnail.path):
+                    default_storage.delete(v.thumbnail.path)
+        res = 'all Videos were deleted(records, video files, thumbnails)'
     except:
         res = 'error, something went wrong!'
 

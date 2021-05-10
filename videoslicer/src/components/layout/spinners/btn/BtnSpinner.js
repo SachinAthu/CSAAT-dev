@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
 
-import styles from './BtnSpinner.module.css'
+import classes from "./BtnSpinner.module.css";
 
 export default function BtnSpinner() {
-    return (
-        <div className={styles.loader}>
-            Loading...
-        </div>
-    )
+  return (
+    <div className={classes.lds_ring}>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
 }

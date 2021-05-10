@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import classes from "./VideoGridIItem.module.css";
@@ -7,37 +7,56 @@ import Tooltip from "../tooltip/Tooltip";
 import { BASE_URL } from "../../../config";
 import SingleVideoPlayerModal from '../../modals/singleVideoPlayerModal/SingleVideoPlayerModal'
 
-import { TABS } from "../../../actions/Types";
+import { CHILD_TYPES, CSAAT_VIDEO_SLICE_CHILDTYPE, TABS, CSAAT_VIDEO_SLICE_ACTIVE_VIDEO } from "../../../actions/Types";
 
 const VideoGridIItem = (props) => {
   const [tooltipObj, setTooltipObj] = useState(null);
   const [tooltip, setTooltip] = useState(false);
   const [modal, setModal] = useState(false)
-  var timeout = null;
+  const timeout = useRef(null);
+  const mounted = useRef(false)
+  
+  useEffect(() => {
+    mounted.current = true
+
+    return() => {
+      mounted.current = false
+    }
+  }, [])
 
   const selectVideo = () => {
+    let pathname = ''
+    const childType = localStorage.getItem(CSAAT_VIDEO_SLICE_CHILDTYPE)
+    localStorage.setItem(CSAAT_VIDEO_SLICE_ACTIVE_VIDEO, props.video.id)
+
+    if(childType === CHILD_TYPES.TYPICAL){
+      pathname = `/t_videos/${props.video.id}`
+    }else{
+      pathname = `/at_videos/${props.video.id}`
+    }
     props.history.push({
-      pathname: "/",
+      pathname: pathname,
     });
   };
 
-  const toogleTooltip = (option) => {
-    const tooltipDiv = document.getElementById(props.video.id + "tooltip");
+  const toogleTooltip = async (option) => {
+    if(!mounted.current) return
 
     if (option === 1) {
-      timeout = setTimeout(() => {
-        axios
-          .get(`${BASE_URL}/video-info/${props.video.id}/`)
-          .then((res) => {
-            setTooltipObj(res.data);
-            setTimeout(() => {
-              setTooltip(true)
-            }, 200);
-          })
-          .catch((err) => {});
+      timeout.current = setTimeout(() => {
+        try{
+          const res = axios.get(`${BASE_URL}/video-info/${props.video.id}/`)
+          setTooltipObj(res.data);
+          setTimeout(() => {
+            setTooltip(true)
+          }, 200);
+        }catch(err) {
+          // console.log(err)
+        }
       }, 1000);
     } else {
-      clearTimeout(timeout);
+      // console.log('out')
+      clearTimeout(timeout.current);
       setTooltip(false)
     }
   };
@@ -57,7 +76,7 @@ const VideoGridIItem = (props) => {
   return (
     <div className={classes.container}>
       <div className={classes.player} onClick={onClickHandler}>
-        <VideoPlayer key={props.video.id} video={props.video} />
+        <VideoPlayer keyf={props.video.id} video={props.video} />
       </div>
 
       <div className={classes.info}>
@@ -106,7 +125,7 @@ const VideoGridIItem = (props) => {
         </div>
 
         <button className={classes.select_btn} onClick={selectVideo}>
-          Select
+          Slice
         </button>
       </div>
 

@@ -5,7 +5,10 @@ import classes from "./App.module.css";
 import Navbar from "./components/layout/navbar/Navbar";
 import Header from "./components/layout/header/Header";
 import Homepage from "./components/homepage/Homepage";
-import TypicalVideos from './components/typicalVideos/TypicalVideos'
+import TypicalVideos from "./components/typicalVideos/TypicalVideos";
+import ATypicalVideos from "./components/atypicalVideos/AtypicalVideos";
+import ErrorBoundry from "./ErrorBoundry";
+import EditPage from "./components/editPage/EditPage";
 
 import store from "./store";
 
@@ -20,7 +23,44 @@ const App = () => {
 
           <main className={classes.main}>
             <Switch>
-              <Route exact path="/t_videos" component={TypicalVideos} />
+              <Route
+                path="/t_videos/:video_id"
+                render={(props) => (
+                  <ErrorBoundry>
+                    <EditPage {...props} />
+                  </ErrorBoundry>
+                )}
+              />
+
+              <Route
+                path="/at_videos/:video_id"
+                render={(props) => (
+                  <ErrorBoundry>
+                    <EditPage {...props} />
+                  </ErrorBoundry>
+                )}
+              />
+
+              <Route
+                exact
+                path="/t_videos"
+                render={(props) => (
+                  <ErrorBoundry>
+                    <TypicalVideos {...props} />
+                  </ErrorBoundry>
+                )}
+              />
+
+              <Route
+                exact
+                path="/at_videos"
+                render={(props) => (
+                  <ErrorBoundry>
+                    <ATypicalVideos {...props} />
+                  </ErrorBoundry>
+                )}
+              />
+
               <Route exact path="/" component={Homepage} />
             </Switch>
           </main>

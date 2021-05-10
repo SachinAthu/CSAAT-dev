@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 import classes from "./Homepage.module.css";
 import { setNav } from "../../actions/NavigationActions";
-import { NAV_LINKS, CSAAT_VIDEO_SLICE_ACTIVE_NAV, CHILD_TYPES } from "../../actions/Types";
+import { NAV_LINKS, CSAAT_VIDEO_SLICE_ACTIVE_NAV } from "../../actions/Types";
 import { Link } from "react-router-dom";
 import HomePageImg from '../../assets/svg/homepage.svg'
 
@@ -29,7 +29,7 @@ class Homepage extends Component {
             &#10146; <span>Slice Typical Children Videos</span>
           </Link>
 
-          <Link to="/">
+          <Link to="/at_videos">
             &#10146; <span>Slice Atypical Children Videos</span>
           </Link>
         </div>

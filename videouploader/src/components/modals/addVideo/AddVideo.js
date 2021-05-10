@@ -11,7 +11,7 @@ import { BASE_URL } from "../../../config";
 
 import { addVideo } from "../../../actions/VideoActions";
 import { getCameras } from "../../../actions/CameraActions";
-import { getCameraAngles } from '../../../actions/CameraAngleActions'
+import { getCameraAngles } from "../../../actions/CameraAngleActions";
 import {
   CHILD_TYPES,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
@@ -39,7 +39,6 @@ class AddVideo extends Component {
       description: "",
       video: "",
       name: "",
-      duration: "",
       loading: false,
       progress: 0,
       progressBar: false,
@@ -54,9 +53,7 @@ class AddVideo extends Component {
     this.fetchCameraAngles();
   }
 
-  componentWillUnmount() {
-
-  }
+  componentWillUnmount() {}
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// functions ///////////////////////////////////////////
@@ -79,23 +76,6 @@ class AddVideo extends Component {
         this.props.getCameraAngles(res.data);
       })
       .catch((err) => {});
-  };
-
-  // get the duration of selected video file
-  getDuration = (file) => {
-    const videoEl = document.getElementById("video_add_modal_videoEl");
-    const objectUrl = URL.createObjectURL(file);
-    videoEl.setAttribute("src", objectUrl);
-    let time;
-
-    videoEl.addEventListener("canplaythrough", function (e) {
-      time = Math.round(e.currentTarget.duration);
-      URL.revokeObjectURL(objectUrl);
-    });
-
-    setTimeout(() => {
-      this.setState({ duration: time });
-    }, 100);
   };
 
   // reset the form
@@ -121,7 +101,7 @@ class AddVideo extends Component {
     for (let i = 0; i < formGroups.length; i++) {
       formGroups[i].children[1].classList.remove(`${classes.errorBorder}`);
     }
-    this.setState({ videoFieldError: false })
+    this.setState({ videoFieldError: false });
   };
 
   // cancel the uploading
@@ -170,9 +150,7 @@ class AddVideo extends Component {
     );
 
     // cameraAngle
-    const cameraAngle_f = document.getElementById(
-      "video_add_form_cameraAngle"
-    );
+    const cameraAngle_f = document.getElementById("video_add_form_cameraAngle");
     const cameraAngle_e = document.getElementById(
       "video_add_form_cameraAngle_error"
     );
@@ -218,13 +196,71 @@ class AddVideo extends Component {
 
   showFailed = (msg) => {
     const resSpan = document.getElementById("video_add_failed");
-    if(resSpan){
+    if (resSpan) {
       resSpan.innerHTML = msg;
-    } 
+    }
   };
+
+  // get the duration and thumbnail of selected video file
+  getDurationThumnail = (file) => {
+    return new Promise((resolve, reject) => {
+      const self = this
+
+      // load the file to a video player
+      const videoPlayer = document.createElement('video');
+      videoPlayer.setAttribute('src', URL.createObjectURL(file));
+      videoPlayer.load();
+      videoPlayer.addEventListener('error', (ex) => {
+          reject("error when loading video file", ex);
+      });
+
+      // load metadata of the video to get video duration and dimensions
+      videoPlayer.addEventListener('loadedmetadata', () => {
+          // seek to user defined timestamp (in seconds) if possible
+          if (videoPlayer.duration < 20) {
+              reject("video is too short.");
+              return;
+          }
+
+          // delay seeking or else 'seeked' event won't fire on Safari
+          setTimeout(() => {
+            videoPlayer.currentTime = 20;
+          }, 200);
+          
+          // extract video thumbnail once seeking is complete
+          videoPlayer.addEventListener('seeked', () => {
+              // define a canvas to have the same dimension as the video
+              const canvas = document.createElement("canvas");
+              canvas.width = videoPlayer.videoWidth;
+              canvas.height = videoPlayer.videoHeight;
+              // draw the video frame to canvas
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+              // return the canvas image as a blob
+              ctx.canvas.toBlob(
+                  blob => {
+                    let filename = `thumbnail_${self.state.camera}_${self.state.cameraAngle}.jpg`
+                    let file = new File([blob], filename,{type:"image/jpeg", lastModified:new Date().getTime()});
+                    const res = {
+                      'file': file,
+                      'filename': filename,
+                      'duration': Math.round(videoPlayer.duration)
+                    }
+                    resolve(res);
+                  },
+                  "image/jpeg",
+                  0.75 /* quality */
+              );
+          });
+      });
+  });
+
+ };
 
   // upload video
   upload = async (formData) => {
+    this.setState({ loading: true, progressBar: true });
+
     let url = "";
     if (
       localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL
@@ -235,7 +271,7 @@ class AddVideo extends Component {
     }
 
     axios(url, {
-      method: 'POST',
+      method: "POST",
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -254,7 +290,7 @@ class AddVideo extends Component {
         this.setState({ loading: false, progressBar: false });
         setTimeout(() => {
           this.props.close();
-        }, 2000)
+        }, 3000);
       })
       .catch((thrown) => {
         if (axios.isCancel(thrown)) {
@@ -271,7 +307,7 @@ class AddVideo extends Component {
   //////////////////////////////////// event handlers ////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
   // trigger when form submit button clicked
-  onSubmit = (e) => {
+  onSubmit = async(e) => {
     e.preventDefault();
     const {
       name,
@@ -279,14 +315,11 @@ class AddVideo extends Component {
       cameraAngle,
       description,
       video,
-      duration,
     } = this.state;
 
     // validation
     const r = this.checkAllFields();
     if (!r) return;
-
-    this.setState({ loading: true, progressBar: true });
 
     let formData = new FormData();
     const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD);
@@ -309,12 +342,18 @@ class AddVideo extends Component {
     formData.append("video", video);
     formData.append("file_type", video.type);
 
-    // get duration
-    this.getDuration(video);
-    setTimeout(() => {
-      formData.append("duration", this.state.duration);
-      this.upload(formData);
-    }, 200);
+    // get duration and thumbnail
+    try{
+      var res = await this.getDurationThumnail(video);
+      setTimeout(() => {
+        formData.append("duration", res.duration);
+        formData.append("thumbnail", res.file);
+        formData.append("thumbnail_name", res.filename);
+        this.upload(formData);
+      }, 200);
+    }catch(err){
+      // console.log(err)
+    }
   };
 
   // trigger when form field value change
@@ -360,10 +399,10 @@ class AddVideo extends Component {
   onVideoFieldChange = (file) => {
     const videoE = document.getElementById("video_add_form_video_error");
     var r = this.checkVideoField(file, videoE);
-    if(r) {
-      this.setState({ videoFieldError: false })
-    }else{
-      this.setState({ videoFieldError: true })
+    if (r) {
+      this.setState({ videoFieldError: false });
+    } else {
+      this.setState({ videoFieldError: true });
     }
     this.setState({
       video: file,
@@ -385,7 +424,7 @@ class AddVideo extends Component {
 
     return (
       <ModalFrame close={this.props.close}>
-        <div className={classes.container} style={{width: '32rem'}}>
+        <div className={classes.container} style={{ width: "32rem" }}>
           <h4>New Video</h4>
 
           <form className={classes.form} onSubmit={this.onSubmit.bind(this)}>
@@ -538,12 +577,12 @@ class AddVideo extends Component {
           <span id="video_add_failed" className={classes.failed}></span>
         </div>
 
-        <video
+        {/* <video
           controls
           width="500px"
           id="video_add_modal_videoEl"
           style={{ display: "none" }}
-        ></video>
+        ></video> */}
       </ModalFrame>
     );
   }

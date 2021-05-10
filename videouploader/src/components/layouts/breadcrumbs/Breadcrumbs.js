@@ -4,10 +4,6 @@ import { Link } from "react-router-dom";
 import classes from "./Breadcrumbs.module.css";
 
 class Breadcrumbs extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     let links = [];
     const { sub_links, heading, current } = this.props;

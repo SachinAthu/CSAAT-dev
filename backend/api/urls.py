@@ -34,14 +34,27 @@ urlpatterns = [
     path('delete-session/<int:pk>/', deleteSession, name='delete-session'),
 
 
-    path('videos/', allVideos, name='videos'),
-    path('videos/<int:pk>/', sessionVideos, name='session-videos'),
-    path('s-videos/', allSlicedVideos, name='s-videos'),
-    path('us-videos/', allUnslicedVideos, name='un-videos'),
+    path('t-videos/', allTVideos, name='t-videos'),
+    path('at-videos/', allATVideos, name='at-videos'),
 
-    path('f-videos/', AllVideosListAPIView.as_view(), name='f-videos'),
+    path('videos/<int:pk>/', sessionVideos, name='session-videos'),
+    
+    path('t-s-videos/', allTSlicedVideos, name='t-s-videos'),
+    path('at-s-videos/', allATSlicedVideos, name='at-s-videos'),
+    
+    path('t-us-videos/', allTUnslicedVideos, name='t-us-videos'),
+    path('at-us-videos/', allATUnslicedVideos, name='at-us-videos'),
+
+    path('t-f-videos/', AllTVideosListAPIView.as_view(), name='t-f-videos'),
+    path('t-s-f-videos/', SlicedTVideosListAPIView.as_view(), name='t-s-f-videos'),
+    path('t-us-f-videos/', UnslicedTVideosListAPIView.as_view(), name='t-us-f-videos'),
+    path('at-f-videos/', AllATVideosListAPIView.as_view(), name='at-f-videos'),
+    path('at-s-f-videos/', SlicedATVideosListAPIView.as_view(), name='at-s-f-videos'),
+    path('at-us-f-videos/', UnslicedATVideosListAPIView.as_view(), name='at-us-f-videos'),
 
     path('video-info/<int:pk>/', getVideoInfo, name='video-info'),
+    path('video/<int:pk>/', getVideo, name='video'),
+
     path('add-t-video/', addTVideo, name='add-t-video'),
     path('add-at-video/', addATVideo, name='add-at-video'),
     path('delete-video/<int:pk>/', deleteVideo, name='delete-video'),
@@ -57,9 +70,9 @@ urlpatterns = [
 
 
     path('video-clips/', allVideoClips, name='all-video-clips'),
-    path('video-clips/<int:pk>/', videoClips, name='video-clips'),
     path('video-clip/<int:pk>/', videoClip, name='video-clip'),
-    path('add-video-clip/<int:pk>/', addVideoClip, name='add-video-clip'),
+    path('single-video-clip/<int:pk>/', singleVideoClip, name='single-video-clip'),
+    path('add-video-clip/', addVideoClip, name='add-video-clip'),
     path('delete-video-clip/<int:pk>/', deleteVideoClip, name='delete-video-clip'),
     path('delete-video-clips/', deleteVideoClips, name='delete-video-clips'),
 

@@ -1,0 +1,72 @@
+.container {
+  width: 38%;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  padding: 0 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.currentTime,
+.totalTime {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.currentTime {
+  margin-right: 35px;
+}
+
+.totalTime {
+  margin-left: 35px;
+}
+
+.playBtn,
+.pauseBtn,
+.stopBtn,
+.backwardBtn,
+.forwardBtn {
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 3px;
+  transition: all 0.1s !important;
+}
+
+.playBtn:hover,
+.pauseBtn:hover,
+.stopBtn:hover,
+.backwardBtn:hover,
+.forwardBtn:hover {
+  background: rgb(255, 255, 255);
+}
+
+.playBtn > svg,
+.pauseBtn > svg,
+.stopBtn > svg,
+.backwardBtn > svg,
+.forwardBtn > svg {
+  fill: rgba(0, 0, 0, 0.55);
+}
+
+.playBtn > svg {
+  transform: scale(1.3);
+}
+
+.pauseBtn > svg {
+  transform: scale(1.3);
+}
+
+.stopBtn > svg {
+  transform: scale(1.9);
+}
+
+.backwardBtn > svg {
+  transform: scale(0.7);
+}
+
+.forwardBtn > svg {
+  transform: scale(0.7);
+}

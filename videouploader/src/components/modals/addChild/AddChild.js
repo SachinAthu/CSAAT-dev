@@ -790,7 +790,7 @@ export class AddChild extends Component {
 
               <button
                 type="submit"
-                className={`.button_primary ${classes.submitbtn}`}
+                className={classes.submitbtn}
               >
                 {requesting ? <BtnSpinner /> : null}
 

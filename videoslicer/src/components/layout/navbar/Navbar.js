@@ -13,10 +13,6 @@ class Navbar extends Component {
       setNav: PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     const el = document.getElementsByClassName(`${classes.nav}`)[0]
     const links = el.getElementsByTagName('a')
@@ -137,7 +133,7 @@ class Navbar extends Component {
             </li>
 
             <li className={ link === NAV_LINKS.NAV_ATPICAL_VIDEO ? classes.nav_li_selected : null}>
-              <Link to="/">
+              <Link to="/at_videos">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
