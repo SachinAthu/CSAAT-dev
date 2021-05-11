@@ -242,9 +242,6 @@ class EditPage extends Component {
   };
 
   videoUpdate = () => {
-    // gsap.set(this.timeline_progress, {
-    //   scaleX: (this.video.currentTime / this.video.duration).toFixed(5)
-    // });
     gsap.set(this.timelineDrag, {
       x: (
         (this.videoEl.currentTime / this.videoEl.duration) *

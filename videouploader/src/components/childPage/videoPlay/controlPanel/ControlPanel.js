@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import gsap from "gsap";
+import Draggable from "gsap/Draggable";
 
 import classes from "./ControlPanel.module.css";
 
-import {
-  tooglePlayMode,
-} from "../../../../actions/VideoActions";
+import { tooglePlayMode } from "../../../../actions/VideoActions";
 import { PLAY_STATUS, PLAY_MODES } from "../../../../actions/Types";
 
 class ControlPanel extends Component {
   static propTypes = {
-    playState: PropTypes.string,
+    playMode: PropTypes.string,
     tooglePlayMode: PropTypes.func.isRequired,
     videos: PropTypes.array.isRequired,
   };
@@ -22,27 +22,17 @@ class ControlPanel extends Component {
       currentTime: 0,
       totalTime: 0,
       playState: PLAY_STATUS.STOP,
-      maxVideo: {},
+      videoLoadCount: 0,
+      currentTooltipTime: 0,
     };
   }
 
   componentDidMount() {
     this.setMax();
-    
-    this.timelineEl = document.getElementById('control_panel_timeline')
-    this.timelineEl.value = 0
-    this.timelineEl.addEventListener('change', this.timelineOnChangeListener)
-    
   }
 
   componentWillUnmount() {
     this.props.tooglePlayMode(PLAY_MODES.SINGLE);
-    if (this.maxVideoEl) {
-      this.maxVideoEl.removeEventListener("timeupdate", this.timeUpdateListener);
-    }
-    if(this.timelineEl) {
-      this.timelineEl.removeEventListener('change', this.timelineOnChangeListener);
-    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -59,20 +49,69 @@ class ControlPanel extends Component {
       }
     }
     this.setState({ totalTime: max, maxVideo: maxV });
+    this.maxVideoEl = document.getElementById(maxV.id + maxV.name);
 
-    // timeupdate listener on max lenth video
-    const videoEl = document.getElementById('control_panel_videoEl')
-    videoEl.setAttribute('src', 'http://localhost:8000' + maxV.video)
-    videoEl.setAttribute('type', maxV.file_type)
-    videoEl.addEventListener("timeupdate", this.timeUpdateListener);
-    this.maxVideoEl = videoEl
-
-    // this.maxVideoEl = document.getElementById(maxV.id + maxV.name);
-    // this.maxVideoEl.addEventListener("timeupdate", this.timeUpdateListener);
-
+    this.initializeTimeline();
   };
 
-  
+  initializeTimeline = () => {
+    const self = this;
+    this.timeline = document.getElementById("control_panel_timeline");
+    this.timelineDrag = document.getElementById("control_panel_timeline_drag");
+    this.timelineHighlited = document.getElementById(
+      "control_panel_timeline_highlited"
+    );
+
+    // this.maxVideoEl.onplay = function () {
+    //   gsap.ticker.add(self.timeUpdateListener);
+    // };
+    // this.maxVideoEl.onpause = function () {
+    //   gsap.ticker.remove(self.timeUpdateListener);
+    // };
+    // this.maxVideoEl.onended = function () {
+    //   gsap.ticker.remove(self.timeUpdateListener);
+    // };
+
+    this.maxVideoEl.ontimeupdate = function () {
+      if (self.props.playMode === PLAY_MODES.ALL) {
+        const offset = (
+          (this.currentTime / this.duration) *
+          (self.timeline.offsetWidth - 10)
+        ).toFixed(4);
+        gsap.set(self.timelineDrag, {
+          x: offset,
+        });
+        self.timelineHighlited.style.width = `${offset}px`;
+        self.setState({ currentTime: this.currentTime });
+      }
+    };
+
+    gsap.registerPlugin(Draggable);
+
+    // make timeline draggable
+    Draggable.create(this.timelineDrag, {
+      type: "x",
+      bounds: this.timeline,
+      inertia: true,
+      onPress: function (e) {
+        // console.log("pressed");
+      },
+      onDrag: function () {
+        const videos = self.props.videos;
+        const t = (this.x / this.maxX) * self.maxVideoEl.duration;
+        for (let i = 0; i < videos.length; i++) {
+          let el = document.getElementById(videos[i].id + videos[i].name);
+          el.currentTime = t;
+        }
+        self.timelineHighlited.style.width = `${this.x}px`;
+        self.setState({ currentTime: t });
+      },
+      onRelease: function (e) {
+        e.preventDefault();
+      },
+    });
+  };
+
   convertSec = (sec) => {
     try {
       let measuredTime = new Date(null);
@@ -83,21 +122,21 @@ class ControlPanel extends Component {
       return "00:00:00";
     }
   };
-  
+
   playAll = () => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
-    this.maxVideoEl.play()
     const videos = this.props.videos;
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
-      videoEl.play();
+      if (videoEl.currentTime < videoEl.duration) {
+        videoEl.play();
+      }
     }
     this.setState({ playState: PLAY_STATUS.PLAY });
   };
-  
+
   pauseAll = () => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
-    this.maxVideoEl.pause()
     const videos = this.props.videos;
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
@@ -105,25 +144,27 @@ class ControlPanel extends Component {
     }
     this.setState({ playState: PLAY_STATUS.PAUSE });
   };
-  
+
   stopAll = () => {
     this.props.tooglePlayMode(PLAY_MODES.SINGLE);
-    this.maxVideoEl.pause()
-    this.maxVideoEl.currentTime = 0
     const videos = this.props.videos;
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
       videoEl.pause();
       videoEl.currentTime = 0;
     }
+    gsap.set(this.timelineDrag, {
+      x: 0,
+    });
+    this.timelineHighlited.style.width = `${0}px`;
     this.setState({ playState: PLAY_STATUS.STOP, currentTime: 0 });
   };
-  
+
   backwardForwardAll = (type, len) => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
     const videos = this.props.videos;
     var t = this.state.currentTime;
-    
+
     if (type === 0) {
       // backward
       t = t - len;
@@ -131,60 +172,99 @@ class ControlPanel extends Component {
       // forward
       t = t + len;
     }
-    
-    this.maxVideoEl.currentTime = t    
+
     for (let i = 0; i < videos.length; i++) {
       let videoEl = document.getElementById(videos[i].id + videos[i].name);
       videoEl.currentTime = t;
     }
     this.setState({ currentTime: t });
   };
-  
+
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// event listeners /////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
-  timelineOnChangeListener = () => {
-    const val = this.timelineEl.value;
+  // timeUpdateListener = () => {
+  //   gsap.set(this.timelineDrag, {
+  //     x: (
+  //       (this.maxVideoEl.currentTime / this.maxVideoEl.duration) *
+  //       (this.timeline.offsetWidth - 10)
+  //     ).toFixed(4),
+  //   });
+  // };
 
-    this.maxVideoEl.removeEventListener("timeupdate", this.timeUpdateListener);
-
-    let ct = Math.round((this.state.totalTime * val) / 100);
+  timelineClicked = (e) => {
     const videos = this.props.videos;
-
-    this.maxVideoEl.currentTime = ct
+    const p = e.clientX - this.timeline.offsetLeft;
+    var t = (p * this.maxVideoEl.duration) / this.timeline.offsetWidth;
     for (let i = 0; i < videos.length; i++) {
-      let el = document.getElementById(videos[i].id + videos[i].name);
-      const d = el.duration;
-      const t = parseInt((d * val) / 100);
-      el.currentTime = t;
+      let videoEl = document.getElementById(videos[i].id + videos[i].name);
+      videoEl.currentTime = t;
     }
-
-    this.setState({ currentTime: ct });
-    this.maxVideoEl.addEventListener("timeupdate", this.timeUpdateListener);
+    if (this.maxVideoEl.paused) {
+      gsap.set(this.timelineDrag, {
+        x: p.toFixed(4),
+      });
+    }
+    this.timelineHighlited.style.width = `${p}px`;
+    this.setState({ currentTime: t });
   };
 
-  timeUpdateListener = () => {
-    const maxV = this.state.maxVideo
+  timelineMouseMove = (e) => {
+    const el = document.getElementById('control_panel_tooltip')
+    const t =
+      ((e.clientX - this.timeline.offsetLeft) * this.maxVideoEl.duration) /
+      this.timeline.offsetWidth;
+    this.setState({ currentTooltipTime: t });
+ 
     
-    let t = parseInt(this.maxVideoEl.currentTime);
-    let p = (t / parseInt(maxV.duration)) * 100;
-    this.setState({ currentTime: t });
-    this.timelineEl.value = p
+    var offset = 0
+    if((e.clientX - this.timeline.offsetLeft) <= 25) {
+      offset = 0
+    }else if((e.clientX - this.timeline.offsetLeft) >= (this.timeline.offsetWidth - 25)) {
+      offset = this.timeline.offsetWidth - 52
+    }else{
+      offset = (e.clientX - this.timeline.offsetLeft - 25).toFixed(4)
+    }
+    gsap.set(el, {
+      x: offset,
+    });
+    el.classList.add(`${classes.show}`)
+  };
 
+  timelineMouseLeave = (e) => {
+    const el = document.getElementById('control_panel_tooltip')
+    gsap.set(el, {
+      x: 0,
+    });
+    el.classList.remove(`${classes.show}`)
   };
 
   render() {
     return (
       <div className={classes.controlPanel}>
-        <div id="controlPanel_progressBar" className={classes.progressBar}>
-          <input
-            id="control_panel_timeline"
-            type="range"
-            className={classes.inputRange__slider}
-            min="0"
-            max="100"
-            step="0.01"
-          />
+        <div
+          id="control_panel_timeline"
+          className={classes.timeline}
+          onClick={this.timelineClicked}
+          onMouseMove={this.timelineMouseMove}
+          onMouseLeave={this.timelineMouseLeave}
+        >
+          <div className={classes.timeline_background}></div>
+
+          <div
+            id="control_panel_timeline_highlited"
+            className={classes.timeline_highlighted}
+          ></div>
+
+          <div
+            id="control_panel_timeline_drag"
+            className={classes.timeline_drag}
+          ></div>
+
+          <div id="control_panel_tooltip" className={classes.tooltip}>
+            <span>{this.convertSec(this.state.currentTooltipTime)}</span>
+            <i></i>
+          </div>
         </div>
 
         <div className={classes.controlers}>
@@ -305,23 +385,13 @@ class ControlPanel extends Component {
             {this.convertSec(this.state.totalTime)}{" "}
           </span>
         </div>
-
-        <video
-          controls
-          width="500px"
-          id="control_panel_videoEl"
-          style={{ display: "none" }}
-          muted={true}
-          controls={false}
-          autoPlay={false}
-        ></video>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  playState: state.videoReducer.playState,
+  playMode: state.videoReducer.playMode,
   videos: state.videoReducer.videos,
 });
 

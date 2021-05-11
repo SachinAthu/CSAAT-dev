@@ -3,23 +3,59 @@
   background-color: rgba(0, 0, 0, 0.03);
   border-radius: 3px;
   margin-bottom: 3rem;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
 
   display: flex;
   flex-direction: column;
   justify-content: space-around;
 }
 
-.progressBar {
-  width: 100%;
-  margin-bottom: 4px;
-
-  display: flex;
-  align-items: center;
+.timeline {
+  position: relative;
+  max-width: 100%;
+  height: 48px;
+  white-space: nowrap;
+  overflow-x: hidden;
+  cursor: pointer;
+  padding-right: 5px;
 }
 
-.inputRange__slider {
-  width: 100%;
+.timeline_background {
+  position: absolute;
+  height: 12px;
+  top: 60%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: none;
+}
+
+.timeline_drag {
+  position: absolute;
+  top: 73%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 20px;
+  cursor: pointer !important;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 3px;
+}
+
+.timeline_highlighted {
+  position: absolute;
+  height: 12px;
+  width: 0px;
+  top: 60%;
+  left: 0;
+  right: 0;
+  border: none;
+  background-color: var(--color-primary);
+}
+
+.timeline_drag:hover {
+  background-color: #008bd1;
 }
 
 .controlers {
@@ -28,13 +64,13 @@
   align-items: flex-start;
 }
 
-.controlers > span{
+.controlers > span {
   color: rgba(0, 0, 0, 0.7);
   font-size: 0.8rem;
   font-weight: 600;
 }
 
-.currentTime{
+.currentTime {
   justify-self: flex-start;
   margin-right: auto;
 }
@@ -50,7 +86,7 @@
 .backwardBtn,
 .forwardBtn {
   background: transparent;
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-radius: 5px;
   margin-top: 5px;
   transition: all 0.1s !important;
@@ -73,21 +109,75 @@
 }
 
 .playBtn > svg {
-  transform: scale(1.4);
+  transform: scale(1.2);
 }
 
 .pauseBtn > svg {
-  transform: scale(1.4);
+  transform: scale(1.2);
 }
 
 .stopBtn > svg {
-  transform: scale(2.1);
+  transform: scale(1.9);
 }
 
 .backwardBtn > svg {
-  transform: scale(0.8);
+  transform: scale(0.7);
 }
 
 .forwardBtn > svg {
-  transform: scale(0.8);
+  transform: scale(0.7);
+}
+
+.tooltip {
+  position: absolute;
+  min-width: 50px;
+  top: 2px;
+  left: 0;
+  padding: 2px 5px;
+  background-color: #fff;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  position: absolute;
+  z-index: 99999999;
+  box-sizing: border-box;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.8s;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.tooltip > span {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip i {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 20px;
+  height: 10px;
+  overflow: hidden;
+  transform: translateX(-50%);
+}
+
+.tooltip i::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.4);
 }

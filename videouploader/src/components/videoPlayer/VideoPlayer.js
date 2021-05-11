@@ -33,7 +33,7 @@ class VideoPlayer extends Component {
 
   // open the video play modal
   onClickHandler = () => {
-    if (!this.props.video.video) {
+    if (!this.props.video.video || this.props.playMode === PLAY_MODES.ALL) {
       return;
     }
     this.setState({ modal: true });
