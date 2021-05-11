@@ -5,11 +5,10 @@ import { connect } from "react-redux";
 import classes from "./VideoPlayer.module.css";
 import SingleVideoPlayerModal from "../modals/singleVideoPlayerModal/SingleVideoPlayerModal";
 
-import { PLAY_MODES, PLAY_STATUS } from "../../actions/Types";
+import { PLAY_MODES } from "../../actions/Types";
 
 class VideoPlayer extends Component {
   static propTypes = {
-    playState: PropTypes.string,
     playMode: PropTypes.string,
   };
 
@@ -113,7 +112,6 @@ class VideoPlayer extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  playState: state.videoReducer.playState,
   playMode: state.videoReducer.playMode,
 });
 

@@ -6,7 +6,6 @@ import classes from "./ControlPanel.module.css";
 
 import {
   tooglePlayMode,
-  tooglePlayState,
 } from "../../../../actions/VideoActions";
 import { PLAY_STATUS, PLAY_MODES } from "../../../../actions/Types";
 
@@ -14,7 +13,6 @@ class ControlPanel extends Component {
   static propTypes = {
     playState: PropTypes.string,
     tooglePlayMode: PropTypes.func.isRequired,
-    tooglePlayState: PropTypes.func.isRequired,
     videos: PropTypes.array.isRequired,
   };
 
@@ -329,5 +327,4 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   tooglePlayMode,
-  tooglePlayState,
 })(ControlPanel);
