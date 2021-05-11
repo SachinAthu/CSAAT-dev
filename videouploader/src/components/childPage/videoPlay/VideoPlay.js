@@ -90,15 +90,19 @@ class VideoPlay extends Component {
   };
 
   render() {
-    const videos = this.props.videos;
+    let videos = this.props.videos;
     let video_list = [];
 
-    for (let i = 0; i < 4; i++) {
-      if (videos[i]) {
-        video_list.push(videos[i]);
-      } else {
-        video_list.push(null);
+    if(videos) {
+      for (let i = 0; i < 4; i++) {
+        if (videos[i]) {
+          video_list.push(videos[i]);
+        } else {
+          video_list.push(null);
+        }
       }
+    }else{
+      videos = []
     }
 
     return (

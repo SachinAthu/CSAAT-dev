@@ -117,27 +117,43 @@ class Videos(models.Model):
             session = Sessions.objects.get(id=instance.session.id)
             return f'antypical/at_{child.clinic_no}/sessions/{session.id}_{session.date}/videos/{instance.name}{instance.file_extension}'
 
+    def thumbnail_upload_path(instance, filename):
+        if instance.tChild:
+            child = TypicalChild.objects.get(id=instance.tChild.id)
+            session = Sessions.objects.get(id=instance.session.id)
+            return f'typical/t_{child.sequence_no}_{child.unique_no}/sessions/{session.id}_{session.date}/videos/{instance.thumbnail_name}'
+
+        else:
+            child = AntypicalChild.objects.get(id=instance.atChild.id)
+            session = Sessions.objects.get(id=instance.session.id)
+            return f'antypical/at_{child.clinic_no}/sessions/{session.id}_{session.date}/videos/{instance.thumbnail_name}'
+
     def __str__(self):
         return self.name
 
     tChild = models.ForeignKey(
-        TypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default='')
+        TypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default=None)
     atChild = models.ForeignKey(
-        AntypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default='')
+        AntypicalChild, on_delete=models.CASCADE, null=True, blank=True, related_name='videos', default=None)
     session = models.ForeignKey(
         Sessions, on_delete=models.CASCADE, null=False, related_name='videos', default='')
-    name = models.CharField(max_length=100, blank=True, null=True)
+    
     video = models.FileField(
         upload_to=video_upload_path, max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    file_type = models.CharField(max_length=50, blank=True, null=True)
+    file_extension = models.CharField(max_length=50, blank=True, null=True)
+    duration = models.CharField(max_length=50, blank=True, null=True)
+    
+    thumbnail = models.FileField(upload_to=thumbnail_upload_path, max_length=100, blank=True, null=True)
+    thumbnail_name = models.CharField(max_length=100, blank=True, null=True)
+    
     description = models.CharField(max_length=1000, blank=True, null=True)
     camera = models.ForeignKey(
         Cameras, on_delete=models.CASCADE, null=True, related_name='videos')
     camera_name = models.CharField(max_length=200, blank=True, null=True)
     camera_angle = models.CharField(max_length=200, blank=True, null=True)
     camera_angle_name = models.CharField(max_length=200, blank=True, null=True)
-    file_type = models.CharField(max_length=50, blank=True, null=True)
-    file_extension = models.CharField(max_length=50, blank=True, null=True)
-    duration = models.CharField(max_length=50, blank=True, null=True)
     sliced = models.BooleanField(blank=True, null=True, default=False)
 
 # all audio records
@@ -174,10 +190,11 @@ class Audios(models.Model):
 class VideoClips(models.Model):
     video_id = models.ForeignKey(
         Videos, on_delete=models.CASCADE, related_name='video_clips')
-    name = models.CharField(max_length=200, blank=False, null=False)
-    video_clip = models.FileField(upload_to='video_clips',
-                             max_length=100, blank=True, null=True)
-    duration = models.DurationField(blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    video = models.CharField(max_length=500, blank=True, null=True)
+    duration = models.CharField(max_length=50, blank=True, null=True)
+    file_type = models.CharField(max_length=50, blank=True, null=True)
+    file_extension = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.name

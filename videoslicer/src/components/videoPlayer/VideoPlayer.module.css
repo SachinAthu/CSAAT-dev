@@ -1,0 +1,82 @@
+.container{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.animate{
+    animation-name: shadow;
+    animation-duration: 1.2s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+}
+
+.container > figure {
+    position: relative;
+    z-index: -1;
+}
+
+.container img{
+    width: 100%;
+    overflow: hidden;
+    display: block;
+}
+
+.container > video{
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    height: auto;
+}
+
+@keyframes shadow{
+    0%{
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+    }
+    10%{
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+    20%{
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+    }
+    30%{
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+    }
+    40%{
+        box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6);
+    }
+    50%{
+        box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6);
+    }
+    60%{
+        box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6);
+    }
+    70%{
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+    }
+    80%{
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+    }
+    90%{
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+    100%{
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+    }
+}
+

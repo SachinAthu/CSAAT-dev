@@ -16,7 +16,7 @@ from api.serializers import TypicalChildSerializer
 @api_view(['GET'])
 def tChildren(request):
     paginator = PageNumberPagination()
-    paginator.page_size = 20
+    paginator.page_size = 50
 
     tChildren_objects = TypicalChild.objects.all().order_by('-id')
     result_page = paginator.paginate_queryset(tChildren_objects, request)
@@ -82,15 +82,18 @@ def updateTChild(request, pk):
             dgf = request.data["dgform"]
             dgf_name = f'dgform_{request.data["unique_no"]}.pdf'
 
-        # delete previous cdoc
-        if not child.cdoc == None:
-            if default_storage.exists(child.cdoc.path):
-                default_storage.delete(child.cdoc.path)
+        try:
+            # delete previous cdoc
+            if not child.cdoc == None:
+                if default_storage.exists(child.cdoc.path):
+                    default_storage.delete(child.cdoc.path)
 
-        # delete previous dgform
-        if not child.dgform == None:
-            if default_storage.exists(child.dgform.path):
-                default_storage.delete(child.dgform.path)
+            # delete previous dgform
+            if not child.dgform == None:
+                if default_storage.exists(child.dgform.path):
+                    default_storage.delete(child.dgform.path)
+        except:
+            print('************ previous file deletion error **************')
 
         serializer.save(cdoc=cd, cdoc_name=cd_name, dgform=dgf, dgform_name=dgf_name)
        

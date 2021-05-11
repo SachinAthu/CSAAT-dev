@@ -1,0 +1,78 @@
+.filterDiv {
+  width: 100%;
+  margin-bottom: 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.videoGrid {
+  width: 100%;
+  height: auto;
+  margin: 5px 0;
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.videoGrid > div {
+  flex: 24%;
+  max-width: 25%;
+  margin: 6px 0.5%;
+}
+
+.emptyDiv {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.emptyDiv > img {
+  width: 18rem;
+  margin-top: 45px;
+  margin-bottom: 30px;
+}
+
+.emptyDiv h6 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.loading_div {
+  width: 100%;
+  height: 30rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.countDiv{
+  margin: 0 0 40px 5px;
+}
+
+.countDiv > span{
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 1);
+}
+
+@media(max-width: 1300px) {
+  .videoGrid > div {
+    flex: 33%;
+    max-width: 33.33%;
+    margin: 6px 0.165%;
+  }
+}
+
+@media(max-width: 1100px) {
+  .videoGrid > div {
+    flex: 48%;
+    max-width: 50%;
+    margin: 6px 1%;
+  }
+}

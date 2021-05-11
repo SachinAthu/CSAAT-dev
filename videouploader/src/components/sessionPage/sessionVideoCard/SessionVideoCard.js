@@ -3,8 +3,8 @@ import React, { Component } from "react";
 import classes from "./SessionVideoCard.module.css";
 import AddVideo from "../../modals/addVideo/AddVideo";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
-import VideoPlayer from "../../videoPlayer/VideoPlayer";
-import ErrorBoundry from '../../ErrorBoundry'
+import ErrorBoundry from "../../ErrorBoundry";
+import SingleVideoPlayerModal from "../../modals/singleVideoPlayerModal/SingleVideoPlayerModal";
 
 class SessionVideoCard extends Component {
   constructor(props) {
@@ -12,6 +12,7 @@ class SessionVideoCard extends Component {
     this.state = {
       adding: false,
       deleting: false,
+      videoModal: false,
     };
   }
 
@@ -30,13 +31,13 @@ class SessionVideoCard extends Component {
 
   // convert seconds to HH:mm:ss format
   convertSec = (sec) => {
-    try{
+    try {
       let measuredTime = new Date(null);
       measuredTime.setSeconds(parseInt(sec)); // specify value of SECONDS
       let MHSTime = measuredTime.toISOString().substr(11, 8);
       return MHSTime;
-    }catch(err){
-      return '00:00:00'
+    } catch (err) {
+      return "00:00:00";
     }
   };
 
@@ -53,17 +54,30 @@ class SessionVideoCard extends Component {
     this.setState({ deleting: true });
   };
 
+  openVideoModal = () => {
+    this.setState({ videoModal: true });
+  };
+
+  closeVideoModal = () => {
+    this.setState({ videoModal: false });
+  };
+
   render() {
     const { adding, deleting } = this.state;
     const { video } = this.props;
-
+    
     let cardContent;
     if (video) {
       // this.getCameraAngle()
       cardContent = (
         <div className={classes.card_content}>
-          <div className={classes.videoplay}>
-            <VideoPlayer key={Math.random()} video={video} />
+          <div className={classes.videoplay} onClick={this.openVideoModal}>
+            <figure>
+              <img
+                src={"http://localhost:8000" + video.thumbnail}
+                alt="video thumbnail"
+              />
+            </figure>
           </div>
 
           <div className={classes.info}>
@@ -84,7 +98,7 @@ class SessionVideoCard extends Component {
                 onClick={this.deleteHandler.bind(this, video)}
                 className={classes.removebtn}
               >
-               Delete
+                Delete
               </button>
             </div>
           </div>
@@ -127,6 +141,10 @@ class SessionVideoCard extends Component {
             header={"video"}
             data={video ? video.id : null}
           />
+        ) : null}
+
+        {this.state.videoModal ? (
+          <SingleVideoPlayerModal close={this.closeVideoModal} video={video} />
         ) : null}
       </div>
     );

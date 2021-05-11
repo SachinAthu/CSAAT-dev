@@ -42,7 +42,6 @@ export const SET_ACTIVE_SESSION_FIRST = 'SET_ACTIVE_SESSION';
 export const UPDATE_ACTIVE_SESSION = 'UPDATE_ACTIVE_SESSION';
 
 
-
 // videos
 export const FETCH_VIDEOS = 'FETCH_VIDEOS';
 export const ADD_VIDEO = 'ADD_VIDEO';
@@ -56,7 +55,6 @@ export const DELETE_AUDIO = 'DELETE_AUDIO';
 
 // video play controls
 export const TOOGLE_PLAY_MODE = 'TOOGLE_PLAY_MODE';
-export const TOOGLE_PLAY_STATE = 'TOOGLE_PLAY_STATE';
 
 // camera
 export const FETCH_CAMERAS = 'FETCH_CAMERAS';

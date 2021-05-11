@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux'
 
 import classes from "./Navbar.module.css";
 import logo from "../../../assets/img/logo.png";
-import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS } from "../../../actions/Types";
+import { CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS } from "../../../actions/Types";
 import { setNav } from '../../../actions/NavigationActions'
 
 class Navbar extends Component {
@@ -18,20 +18,11 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    // if(!this.props.currentNav && !localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV)) {
-    //     this.props.setNav(NAV_LINKS.NAV_HOME)
-    //     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS.NAV_HOME)
-    // }
-
     const el = document.getElementsByClassName(`${classes.nav}`)[0]
     const links = el.getElementsByTagName('a')
     for(let i = 0; i < links.length; i++) {
         links[i].addEventListener('click', this.setNav.bind(this, links[i]));
     }
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-
   }
 
   componentWillUnmount() {
@@ -137,12 +128,7 @@ class Navbar extends Component {
             </li>
 
             <li className={ link === NAV_LINKS.NAV_TYPICAL_CHILD ? classes.nav_li_selected : null}>
-              <Link
-                to={{
-                  pathname: "/t_children",
-                  state: { childType: CHILD_TYPES.TYPICAL },
-                }}
-              >
+              <Link to="/t_children" >
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -157,12 +143,7 @@ class Navbar extends Component {
             </li>
 
             <li className={ link === NAV_LINKS.NAV_ATPICAL_CHILD ? classes.nav_li_selected : null}>
-              <Link
-                to={{
-                  pathname: "/at_children",
-                  state: { childType: CHILD_TYPES.ANTYPICAL },
-                }}
-              >
+              <Link to="/at_children" >
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"

@@ -17,7 +17,7 @@ import {
   CSAAT_VIDEO_UPLOAD_CHILDTYPE,
 } from "../../../actions/Types";
 
-function AddSession(props) {
+const AddSession = (props) => {
   const [rDate, setRDate] = useState("");
   const [loading, setLoading] = useState(false);
   const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);

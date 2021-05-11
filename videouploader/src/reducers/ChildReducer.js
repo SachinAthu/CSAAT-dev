@@ -54,8 +54,6 @@ export default function (state = initialState, action) {
       const tempChildren = [...state.children];
       const updatedChild = action.data;
 
-      console.log(action.data);
-
       tempChildren.forEach((c, i) => {
         if (c.id === updatedChild.id) {
           if (localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL) {
@@ -73,8 +71,6 @@ export default function (state = initialState, action) {
           c.dgform_name = updatedChild.dgform_name;
         }
       });
-
-      console.log(tempChildren);
 
       return {
         ...state,

@@ -1,11 +1,9 @@
 import {
   FETCH_VIDEOS,
   ADD_VIDEO,
-  UPDATE_VIDEO,
   DELETE_VIDEO,
   DELETE_VIDEOS,
   TOOGLE_PLAY_MODE,
-  TOOGLE_PLAY_STATE,
 } from "./Types";
 
 // get all videos for a session
@@ -49,15 +47,4 @@ export const tooglePlayMode = (mode) => (dispatch, getState) => {
     data: mode,
   });
 };
-
-// toogle play state
-export const tooglePlayState = (state) => (dispatch, getState) => {
-  dispatch({
-    type: TOOGLE_PLAY_STATE,
-    data: state,
-  });
-};
-
-
-
 

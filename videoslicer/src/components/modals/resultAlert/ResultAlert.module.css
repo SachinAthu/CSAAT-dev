@@ -1,0 +1,54 @@
+.container {
+  padding: 0 10px;
+  width: 18rem;
+  z-index: 1010;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.success{
+  color: var(--color-green);
+}
+
+.failed{
+  color: var(--color-danger);
+}
+
+.header span {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.actions {
+  margin: 10px 0 0 0;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.okbtn {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  padding: 6px 40px;
+  margin: 0 2px;
+}
+
+.okbtn:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}

@@ -17,7 +17,7 @@ from api.serializers import AntypicalChildSerializer
 @api_view(['GET'])
 def atChildren(request):
     paginator = PageNumberPagination()
-    paginator.page_size = 20
+    paginator.page_size = 50
 
     atChildren_objects = AntypicalChild.objects.all().order_by('-id')
     result_page = paginator.paginate_queryset(atChildren_objects, request)
@@ -81,15 +81,18 @@ def updateATChild(request, pk):
             dgf = request.data["dgform"]
             dgf_name = f'dgform_{request.data["clinic_no"]}.pdf'
 
-         # delete previous cdoc
-        if not child.cdoc == None:
-            if default_storage.exists(child.cdoc.path):
-                default_storage.delete(child.cdoc.path)
+        try:
+            # delete previous cdoc
+            if not child.cdoc == None:
+                if default_storage.exists(child.cdoc.path):
+                    default_storage.delete(child.cdoc.path)
 
-        # delete previous dgform
-        if not child.dgform == None:
-            if default_storage.exists(child.dgform.path):
-                default_storage.delete(child.dgform.path)
+            # delete previous dgform
+            if not child.dgform == None:
+                if default_storage.exists(child.dgform.path):
+                    default_storage.delete(child.dgform.path)
+        except:
+            print('************ previous file deletion error **************')
     
         serializer.save(cdoc=cd, cdoc_name=cd_name, dgform=dgf, dgform_name=dgf_name)
     else:

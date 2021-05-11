@@ -13,6 +13,8 @@ Faker = "^5.8.0"
 djangorestframework = "^3.12.4"
 django-cors-headers = "^3.7.0"
 cryptography = "^3.4.6"
+django-filter = "^2.4.0"
+moviepy = "^1.0.3"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.6.0"

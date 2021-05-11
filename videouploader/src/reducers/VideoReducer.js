@@ -5,14 +5,12 @@ import {
   DELETE_VIDEOS,
   PLAY_MODES,
   TOOGLE_PLAY_MODE,
-  TOOGLE_PLAY_STATE,
-  PLAY_STATUS,
 } from "../actions/Types";
 
 const initialState = {
   videos: [],
   playMode: PLAY_MODES.SINGLE,
-  playState: PLAY_STATUS.STOP,
+  readyPlayerCount: 0,
 };
 
 export default function (state = initialState, action) {
@@ -48,12 +46,6 @@ export default function (state = initialState, action) {
         ...state,
         playMode: action.data,
       };
-
-      case TOOGLE_PLAY_STATE:
-        return {
-          ...state,
-          playState: action.data,
-        };
 
     default:
       return state;

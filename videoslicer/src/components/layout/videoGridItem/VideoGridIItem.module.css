@@ -1,0 +1,84 @@
+.container {
+  position: relative;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+}
+
+.player {
+  min-height: 164px;
+}
+
+.info {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 8px 5px;
+
+  display: flex;
+  align-items: center;
+}
+
+.info_1 {
+  justify-self: flex-start;
+
+  display: flex;
+  align-items: center;
+}
+
+.yes {
+  fill: var(--color-green);
+  transform: scale(0.8);
+}
+
+.no {
+  fill: var(--color-danger);
+  transform: scale(0.8);
+}
+
+.details {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+}
+
+.details > svg {
+  fill: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.show{
+  display: block;
+}
+
+.select_btn {
+  width: 55px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0 0 0 5px;
+  padding: 4px 0px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  color: var(--color-secondary);
+}
+
+.select_btn:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+@media(max-width: 1480px) {
+  .player {
+    min-height: 136px;
+  }
+}
+
+@media(max-width: 1300px) {
+  .player {
+    min-height: 172px;
+  }
+}
+
+@media(max-width: 1200px) {
+  .player {
+    min-height: 157px;
+  }
+}

@@ -5,11 +5,10 @@ import { connect } from "react-redux";
 import classes from "./VideoPlayer.module.css";
 import SingleVideoPlayerModal from "../modals/singleVideoPlayerModal/SingleVideoPlayerModal";
 
-import { PLAY_MODES, PLAY_STATUS } from "../../actions/Types";
+import { PLAY_MODES } from "../../actions/Types";
 
 class VideoPlayer extends Component {
   static propTypes = {
-    playState: PropTypes.string,
     playMode: PropTypes.string,
   };
 
@@ -19,16 +18,22 @@ class VideoPlayer extends Component {
       modal: false,
       loaded: false
     };
+    this.timeout = null
   }
 
   componentWillUnmount() {
     const el = document.getElementById(this.props.video.id + this.props.video.name)
-    el.remove()
+    if(el){
+      el.pause()
+      el.removeAttribute('src')
+      el.load()
+      el.remove()
+    }
   }
 
   // open the video play modal
   onClickHandler = () => {
-    if (!this.props.video.video) {
+    if (!this.props.video.video || this.props.playMode === PLAY_MODES.ALL) {
       return;
     }
     this.setState({ modal: true });
@@ -40,29 +45,26 @@ class VideoPlayer extends Component {
 
   // play video on mouse hover
   onMouseEnterHandler = () => {
-    if (!this.props.video.video || !this.state.loaded) {
-      return;
-    }
-    if (
-      this.props.playMode === PLAY_MODES.SINGLE &&
-      this.props.playState === PLAY_STATUS.STOP
-    ) {
-      var video = document.getElementById(
-        this.props.video.id + this.props.video.name
-      );
-      video.play();
-    }
+    this.timeout = setTimeout(() => {
+      if (!this.props.video.video || !this.state.loaded) {
+        return;
+      }
+      if (this.props.playMode === PLAY_MODES.SINGLE) {
+        var video = document.getElementById(
+          this.props.video.id + this.props.video.name
+        );
+        video.play();
+      }
+    }, 3000)
   };
 
   // stop video on mouse leave
   onMouseLeaveHandler = () => {
+    clearTimeout(this.timeout)
     if (!this.props.video.video) {
       return;
     }
-    if (
-      this.props.playMode === PLAY_MODES.SINGLE &&
-      this.props.playState === PLAY_STATUS.STOP
-    ) {
+    if (this.props.playMode === PLAY_MODES.SINGLE) {
       var video = document.getElementById(
         this.props.video.id + this.props.video.name
       );
@@ -81,7 +83,7 @@ class VideoPlayer extends Component {
         <video
           key={this.props.key}
           id={this.props.video.id + this.props.video.name}
-          className={`${classes.player} img-fluid`}
+          className={classes.player}
           onClick={this.onClickHandler}
           onMouseEnter={this.onMouseEnterHandler}
           onMouseLeave={this.onMouseLeaveHandler}
@@ -89,6 +91,7 @@ class VideoPlayer extends Component {
           autoPlay={false}
           controls={false}
           muted={true}
+          poster={"http://localhost:8000" + this.props.video.thumbnail}
         >
           <source 
             src={"http://localhost:8000" + this.props.video.video} 
@@ -109,7 +112,6 @@ class VideoPlayer extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  playState: state.videoReducer.playState,
   playMode: state.videoReducer.playMode,
 });
 

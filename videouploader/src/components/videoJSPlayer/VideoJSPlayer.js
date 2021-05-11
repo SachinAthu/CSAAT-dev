@@ -1,27 +1,10 @@
 import React, { Component } from "react";
 import videojs from "video.js";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 
 import "video.js/dist/video-js.min.css";
 import "@videojs/themes/dist/forest/index.css";
-import classes from "./VideoJSPlayer.module.css";
-
-import { PLAY_MODES, PLAY_STATUS } from "../../actions/Types";
-import {
-  tooglePlayMode,
-} from "../../actions/VideoActions";
 
 class VideoJSPlayer extends Component {
-  static propTypes = {
-    playState: PropTypes.string,
-    tooglePlayMode: PropTypes.func.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     // instantiate Video.js
     const videoJsOptions = {
@@ -47,9 +30,6 @@ class VideoJSPlayer extends Component {
       function onPlayerReady() {
       }
     );
-
-      
-
    
   }
 
@@ -63,11 +43,11 @@ class VideoJSPlayer extends Component {
 
   render() {
     return (
-      <div className={classes.container}>
+      <div>
         <div data-vjs-player>
           <video
             ref={(node) => (this.videoNode = node)}
-            className={`video-js vjs-theme-forest ${classes.player}`}
+            className="video-js vjs-theme-forest"
           ></video>
         </div>
       </div>
@@ -75,10 +55,4 @@ class VideoJSPlayer extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  playState: state.videoReducer.playState,
-});
-
-export default connect(mapStateToProps, {
-  tooglePlayMode,
-})(VideoJSPlayer);
+export default VideoJSPlayer;
