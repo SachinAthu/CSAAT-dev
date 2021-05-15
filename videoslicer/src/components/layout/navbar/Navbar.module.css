@@ -118,6 +118,11 @@
     letter-spacing: 2px;
 }
 
-.csaat_home{
+.csaat_home,
+.uploader_home{
     margin: 15px 0 30px 0 !important;
+}
+
+.uploader_home svg {
+  transform: scale(1);
 }

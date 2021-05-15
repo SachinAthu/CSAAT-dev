@@ -38,36 +38,45 @@ def singleVideoClip(request, pk):
 def addVideoClip(request):
     print(request.data)
     video = Videos.objects.get(id=request.data['video_id'])
+    clip_name = ''
+    clip_file_name = ''
+    if not video.tChild == None:
+        child = video.tChild
+        clip_name = f'{child.unique_no}_{child.sequence_no}_{video.id}'
+        clip_file_name = f'{child.unique_no}_{child.sequence_no}_{video.id}{video.file_extension}'
+    else:
+        child = video.atChild
+        clip_name = f'{child.clinic_no}_{video.id}'
+        clip_file_name = f'{child.clinic_no}_{video.id}{video.file_extension}'
 
-    try:
-        clip = VideoFileClip(video.video.path).subclip(request.data['start_time'], request.data['end_time'])
-        clip_name = str(video.id) + video.file_extension
-        clip_path = f'{settings.MEDIA_ROOT}/sliced_videos/{clip_name}'
-        clip.write_videofile(clip_path)
+    clip = VideoFileClip(video.video.path).subclip(request.data['start_time'], request.data['end_time'])
+    clip_path = f'{settings.MEDIA_ROOT}/sliced_videos/{clip_file_name}'
+    clip.write_videofile(clip_path)
 
-        data = {
-            'video_id': request.data['video_id'],
-            'name': clip_name,
-            'video': f'/sliced_videos/{clip_name}',
-            'duration': request.data['end_time'] - request.data['start_time'],
-            'file_type': video.file_type,
-            'file_extension': video.file_extension
-        }
-        serializer = VideoClipsSerializer(data=data)
-        if serializer.is_valid():
-            # delete previous record
-            video_clips = VideoClips.objects.filter(video_id=request.data['video_id'])
-            if video_clips.__len__() >= 1:
-                for v in video_clips:
-                    v.delete()
-          
-            serializer.save()
-        else:
-            print(serializer.errors)
+    data = {
+        'video_id': request.data['video_id'],
+        'name': clip_name,
+        'video': f'/sliced_videos/{clip_file_name}',
+        'duration': request.data['end_time'] - request.data['start_time'],
+        'file_type': video.file_type,
+        'file_extension': video.file_extension
+    }
+    serializer = VideoClipsSerializer(data=data)
+    if serializer.is_valid():
+        # delete previous record
+        video_clips = VideoClips.objects.filter(video_id=request.data['video_id'])
+        if video_clips.__len__() >= 1:
+            for v in video_clips:
+                v.delete()
+        
+        serializer.save()
+    else:
+        print(serializer.errors)
 
-        return Response({'msg': 'Successed!'}, status = 200)
-    except:
-        return Response({'msg': 'Failed!'}, status = 500)
+    return Response({'msg': 'Successed!'}, status = 200)
+    # try:
+    # except:
+    #     return Response({'msg': 'Failed!'}, status = 500)
 
 
 # delete a video clip

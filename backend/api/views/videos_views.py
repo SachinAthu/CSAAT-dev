@@ -250,6 +250,21 @@ def addATVideo(request):
     return Response(serializer.data)
 
 
+# update video
+@api_view(['PUT'])
+def updateVideo(request, pk):
+    print(request.data)
+    video = Videos.objects.get(id=pk)
+    serializer = VideosSerializer(data=request.data, instance=video)
+
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        print(serializer.errors)
+
+    return Response(serializer.data)
+
+
 # delete a video
 @api_view(['DELETE'])
 def deleteVideo(request, pk):

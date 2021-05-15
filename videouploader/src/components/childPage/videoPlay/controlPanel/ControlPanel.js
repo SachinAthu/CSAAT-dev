@@ -160,17 +160,17 @@ class ControlPanel extends Component {
     this.setState({ playState: PLAY_STATUS.STOP, currentTime: 0 });
   };
 
-  backwardForwardAll = (type, len) => {
+  backwardForwardAll = (type) => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
     const videos = this.props.videos;
     var t = this.state.currentTime;
 
     if (type === 0) {
       // backward
-      t = t - len;
+      t = t - 5;
     } else {
       // forward
-      t = t + len;
+      t = t + 5;
     }
 
     for (let i = 0; i < videos.length; i++) {
@@ -273,23 +273,7 @@ class ControlPanel extends Component {
           </span>
 
           <button
-            onClick={this.backwardForwardAll.bind(this, 0, 30)}
-            className={classes.backwardBtn}
-          >
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-            >
-              <title>Backward 30s</title>
-              <path d="M27.297 2.203c0.391-0.391 0.703-0.25 0.703 0.297v23c0 0.547-0.313 0.688-0.703 0.297l-11.094-11.094c-0.094-0.094-0.156-0.187-0.203-0.297v11.094c0 0.547-0.313 0.688-0.703 0.297l-11.094-11.094c-0.094-0.094-0.156-0.187-0.203-0.297v10.594c0 0.547-0.453 1-1 1h-2c-0.547 0-1-0.453-1-1v-22c0-0.547 0.453-1 1-1h2c0.547 0 1 0.453 1 1v10.594c0.047-0.109 0.109-0.203 0.203-0.297l11.094-11.094c0.391-0.391 0.703-0.25 0.703 0.297v11.094c0.047-0.109 0.109-0.203 0.203-0.297z"></path>
-            </svg>
-          </button>
-
-          <button
-            onClick={this.backwardForwardAll.bind(this, 0, 5)}
+            onClick={this.backwardForwardAll.bind(this, 0)}
             className={classes.backwardBtn}
           >
             <svg
@@ -349,7 +333,7 @@ class ControlPanel extends Component {
           </button>
 
           <button
-            onClick={this.backwardForwardAll.bind(this, 1, 5)}
+            onClick={this.backwardForwardAll.bind(this, 1)}
             className={classes.forwardBtn}
           >
             <svg
@@ -361,22 +345,6 @@ class ControlPanel extends Component {
             >
               <title>Forward 5s</title>
               <path d="M0.703 25.797c-0.391 0.391-0.703 0.25-0.703-0.297v-23c0-0.547 0.313-0.688 0.703-0.297l11.094 11.094c0.094 0.094 0.156 0.187 0.203 0.297v-10.594c0-0.547 0.453-1 1-1h2c0.547 0 1 0.453 1 1v22c0 0.547-0.453 1-1 1h-2c-0.547 0-1-0.453-1-1v-10.594c-0.047 0.109-0.109 0.203-0.203 0.297z"></path>
-            </svg>
-          </button>
-
-          <button
-            onClick={this.backwardForwardAll.bind(this, 1, 30)}
-            className={classes.forwardBtn}
-          >
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-            >
-              <title>Forward 30s</title>
-              <path d="M0.703 25.797c-0.391 0.391-0.703 0.25-0.703-0.297v-23c0-0.547 0.313-0.688 0.703-0.297l11.094 11.094c0.094 0.094 0.156 0.187 0.203 0.297v-11.094c0-0.547 0.313-0.688 0.703-0.297l11.094 11.094c0.094 0.094 0.156 0.187 0.203 0.297v-10.594c0-0.547 0.453-1 1-1h2c0.547 0 1 0.453 1 1v22c0 0.547-0.453 1-1 1h-2c-0.547 0-1-0.453-1-1v-10.594c-0.047 0.109-0.109 0.203-0.203 0.297l-11.094 11.094c-0.391 0.391-0.703 0.25-0.703-0.297v-11.094c-0.047 0.109-0.109 0.203-0.203 0.297z"></path>
             </svg>
           </button>
 

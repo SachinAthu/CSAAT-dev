@@ -40,6 +40,10 @@ const App = (props) => {
               <Route exact path="/camera_angles" render={(props) => <ErrorBoundry><CameraAngles {...props} /></ErrorBoundry>} />
 
               <Route exact path="/" render={(props) => <ErrorBoundry><Homepage {...props} /></ErrorBoundry>} />
+
+              <Route path="*">
+                <div><h1>404 Not Found</h1></div>
+              </Route>
             </Switch>
           </main>
         </div>

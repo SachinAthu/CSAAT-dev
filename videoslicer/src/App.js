@@ -62,6 +62,10 @@ const App = () => {
               />
 
               <Route exact path="/" component={Homepage} />
+
+              <Route path="*">
+                <div><h1>404 Not Found</h1></div>
+              </Route>
             </Switch>
           </main>
         </div>

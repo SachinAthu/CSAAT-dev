@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { connect } from 'react-redux'
+import { connect } from "react-redux";
 
 import classes from "./Navbar.module.css";
 import logo from "../../../assets/img/logo.png";
-import { CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS } from "../../../actions/Types";
-import { setNav } from '../../../actions/NavigationActions'
+import {
+  CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+  NAV_LINKS,
+} from "../../../actions/Types";
+import { setNav } from "../../../actions/NavigationActions";
 
 class Navbar extends Component {
   static propTypes = {
-      setNav: PropTypes.func.isRequired,
+    setNav: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -18,70 +21,68 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    const el = document.getElementsByClassName(`${classes.nav}`)[0]
-    const links = el.getElementsByTagName('a')
-    for(let i = 0; i < links.length; i++) {
-        links[i].addEventListener('click', this.setNav.bind(this, links[i]));
+    const el = document.getElementsByClassName(`${classes.nav}`)[0];
+    const links = el.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].addEventListener("click", this.setNav.bind(this, links[i]));
     }
   }
 
   componentWillUnmount() {
-    const el = document.getElementsByClassName(`${classes.nav}`)[0]
-    const links = el.getElementsByTagName('a')
-    for(let i = 0; i < links.length; i++) {
-        links[i].removeEventListener('click', this.setNav.bind(this, links[i]));
+    const el = document.getElementsByClassName(`${classes.nav}`)[0];
+    const links = el.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].removeEventListener("click", this.setNav.bind(this, links[i]));
     }
-    localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV)
+    localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV);
   }
 
   setNav = (link) => {
-    let l = ''
+    let l = "";
 
-    switch(link.innerText){
-        case 'CSAAT Home':
-            break
-        case 'Home':
-            l = NAV_LINKS.NAV_HOME
-            break
-        case 'Typical Children':
-            l = NAV_LINKS.NAV_TYPICAL_CHILD
-            break
-        case 'Atypical Children':
-            l = NAV_LINKS.NAV_ATPICAL_CHILD
-            break
-        case 'Cameras':
-            l = NAV_LINKS.NAV_CAMERAS
-            break
-        case 'Camera Angles':
-            l = NAV_LINKS.NAV_CAMERA_ANGLES
-            break
-        default:
-            return
+    switch (link.innerText) {
+      case "Home":
+        l = NAV_LINKS.NAV_HOME;
+        break;
+      case "Typical Children":
+        l = NAV_LINKS.NAV_TYPICAL_CHILD;
+        break;
+      case "Atypical Children":
+        l = NAV_LINKS.NAV_ATPICAL_CHILD;
+        break;
+      case "Cameras":
+        l = NAV_LINKS.NAV_CAMERAS;
+        break;
+      case "Camera Angles":
+        l = NAV_LINKS.NAV_CAMERA_ANGLES;
+        break;
+      default:
+        return;
     }
 
-    this.props.setNav(l)
-    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, l)
+    this.props.setNav(l);
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, l);
 
-    this.removeSelected()
-    link.classList.add(`${classes.nav_a_selected}`)
-  }
+    this.removeSelected();
+    link.classList.add(`${classes.nav_a_selected}`);
+  };
 
   removeSelected = () => {
-    const el = document.getElementsByClassName(`${classes.nav}`)[0]
-    if(!el) return
-    const links = el.getElementsByTagName('a')
-    for(let i = 0; i < links.length; i++) {
-        links[i].classList.remove(`${classes.nav_a_selected}`)
+    const el = document.getElementsByClassName(`${classes.nav}`)[0];
+    if (!el) return;
+    const links = el.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].classList.remove(`${classes.nav_a_selected}`);
     }
-  }
+  };
 
   render() {
-    let link = null
-    this.removeSelected()
-    if(this.props.currentNav) {
-        link = this.props.currentNav
-    }else {
-        link = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV)
+    let link = null;
+    this.removeSelected();
+    if (this.props.currentNav) {
+      link = this.props.currentNav;
+    } else {
+      link = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV);
     }
 
     return (
@@ -98,7 +99,7 @@ class Navbar extends Component {
         <nav className={classes.nav}>
           <ul>
             <li className={classes.csaat_home}>
-              <Link to="/">
+              <a href="http://127.0.0.1:8000">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -109,10 +110,29 @@ class Navbar extends Component {
                   <path d="M9.984 9.984h4.031q0-0.797-0.609-1.383t-1.406-0.586-1.406 0.586-0.609 1.383zM18.984 9.281l3 2.719h-3v8.016h-4.969v-6h-4.031v6h-4.969v-8.016h-3l9.984-9 3.984 3.609v-2.625h3v5.297z"></path>
                 </svg>
                 <span>CSAAT Home</span>
-              </Link>
+              </a>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_HOME ? classes.nav_li_selected : null}>
+            <li className={classes.slicer_home}>
+              <a href="http://127.0.0.1:8000/video-slicer" target="_blank" rel="noreferrer">
+                <svg
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="26"
+                  height="28"
+                  viewBox="0 0 26 28"
+                >
+                  <path d="M8.703 20h9.297v-9.297zM8 19.297l9.297-9.297h-9.297v9.297zM26 20.5v3c0 0.281-0.219 0.5-0.5 0.5h-3.5v3.5c0 0.281-0.219 0.5-0.5 0.5h-3c-0.281 0-0.5-0.219-0.5-0.5v-3.5h-13.5c-0.281 0-0.5-0.219-0.5-0.5v-13.5h-3.5c-0.281 0-0.5-0.219-0.5-0.5v-3c0-0.281 0.219-0.5 0.5-0.5h3.5v-3.5c0-0.281 0.219-0.5 0.5-0.5h3c0.281 0 0.5 0.219 0.5 0.5v3.5h13.297l3.844-3.859c0.203-0.187 0.516-0.187 0.719 0 0.187 0.203 0.187 0.516 0 0.719l-3.859 3.844v13.297h3.5c0.281 0 0.5 0.219 0.5 0.5z"></path>
+                </svg>
+                <span>Video Slicer</span>
+              </a>
+            </li>
+
+            <li
+              className={
+                link === NAV_LINKS.NAV_HOME ? classes.nav_li_selected : null
+              }
+            >
               <Link to="/">
                 <svg
                   version="1.1"
@@ -127,8 +147,14 @@ class Navbar extends Component {
               </Link>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_TYPICAL_CHILD ? classes.nav_li_selected : null}>
-              <Link to="/t_children" >
+            <li
+              className={
+                link === NAV_LINKS.NAV_TYPICAL_CHILD
+                  ? classes.nav_li_selected
+                  : null
+              }
+            >
+              <Link to="/t_children">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -142,8 +168,14 @@ class Navbar extends Component {
               </Link>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_ATPICAL_CHILD ? classes.nav_li_selected : null}>
-              <Link to="/at_children" >
+            <li
+              className={
+                link === NAV_LINKS.NAV_ATPICAL_CHILD
+                  ? classes.nav_li_selected
+                  : null
+              }
+            >
+              <Link to="/at_children">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +189,11 @@ class Navbar extends Component {
               </Link>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_CAMERAS ? classes.nav_li_selected : null}>
+            <li
+              className={
+                link === NAV_LINKS.NAV_CAMERAS ? classes.nav_li_selected : null
+              }
+            >
               <Link to="/cameras">
                 <svg
                   version="1.1"
@@ -172,7 +208,13 @@ class Navbar extends Component {
               </Link>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_CAMERA_ANGLES ? classes.nav_li_selected : null}>
+            <li
+              className={
+                link === NAV_LINKS.NAV_CAMERA_ANGLES
+                  ? classes.nav_li_selected
+                  : null
+              }
+            >
               <Link to="/camera_angles">
                 <svg
                   version="1.1"
@@ -201,7 +243,7 @@ class Navbar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    currentNav: state.navigationReducer.currentNav,
-})
+  currentNav: state.navigationReducer.currentNav,
+});
 
-export default connect(mapStateToProps, { setNav }) (Navbar);
+export default connect(mapStateToProps, { setNav })(Navbar);
