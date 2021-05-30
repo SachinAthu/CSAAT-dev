@@ -167,6 +167,12 @@
   height: 20px;
 }
 
+.progressBar > div{
+  height: 15px;
+  background-color: var(--color-primary);
+  border-radius: 3px;
+}
+
 .cancelBtn {
   flex: 5%;
   margin-left: 5px;

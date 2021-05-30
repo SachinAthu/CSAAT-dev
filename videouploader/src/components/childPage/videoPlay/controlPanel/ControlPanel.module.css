@@ -39,7 +39,7 @@
   height: 20px;
   cursor: pointer !important;
   background-color: var(--color-primary);
-  border: none;
+  box-shadow: -1px 0 0 0 var(--color-primary);
   border-radius: 3px;
 }
 
@@ -56,12 +56,13 @@
 
 .timeline_drag:hover {
   background-color: #008bd1;
+  box-shadow: -1px 0 0 0 var(--color-primary);
 }
 
 .controlers {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
 }
 
 .controlers > span {
@@ -72,12 +73,12 @@
 
 .currentTime {
   justify-self: flex-start;
-  margin-right: auto;
+  margin-right: 40px;
 }
 
 .totalTime {
   justify-self: flex-end;
-  margin-left: auto;
+  margin-left: 40px;
 }
 
 .playBtn,

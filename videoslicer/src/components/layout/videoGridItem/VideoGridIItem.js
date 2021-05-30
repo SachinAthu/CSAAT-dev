@@ -1,64 +1,67 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Fragment } from "react";
 import axios from "axios";
 
 import classes from "./VideoGridIItem.module.css";
 import VideoPlayer from "../../videoPlayer/VideoPlayer";
 import Tooltip from "../tooltip/Tooltip";
 import { BASE_URL } from "../../../config";
-import SingleVideoPlayerModal from '../../modals/singleVideoPlayerModal/SingleVideoPlayerModal'
+import SingleVideoPlayerModal from "../../modals/singleVideoPlayerModal/SingleVideoPlayerModal";
 
-import { CHILD_TYPES, CSAAT_VIDEO_SLICE_CHILDTYPE, TABS, CSAAT_VIDEO_SLICE_ACTIVE_VIDEO } from "../../../actions/Types";
+import {
+  CHILD_TYPES,
+  CSAAT_VIDEO_SLICE_CHILDTYPE,
+  TABS,
+  CSAAT_VIDEO_SLICE_ACTIVE_VIDEO,
+} from "../../../actions/Types";
 
 const VideoGridIItem = (props) => {
-  const [tooltipObj, setTooltipObj] = useState(null);
   const [tooltip, setTooltip] = useState(false);
-  const [modal, setModal] = useState(false)
-  const timeout = useRef(null);
-  const mounted = useRef(false)
-  
-  useEffect(() => {
-    mounted.current = true
+  const [modal, setModal] = useState(false);
+  const [detail, setDetail] = useState("");
+  const mounted = useRef(false);
 
-    return() => {
-      mounted.current = false
-    }
-  }, [])
+  useEffect(() => {
+    mounted.current = true;
+
+    // fetch video details
+    const getVideoDetails = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/video-info/${props.video.id}/`);
+        setDetail(res.data);
+        // console.log(res.data)
+      } catch (err) {
+        // console.log(err)
+      }
+    };
+    getVideoDetails();
+
+    return () => {
+      mounted.current = false;
+    };
+  }, [props.video.id]);
+
 
   const selectVideo = () => {
-    let pathname = ''
-    const childType = localStorage.getItem(CSAAT_VIDEO_SLICE_CHILDTYPE)
-    localStorage.setItem(CSAAT_VIDEO_SLICE_ACTIVE_VIDEO, props.video.id)
+    let pathname = "";
+    const childType = localStorage.getItem(CSAAT_VIDEO_SLICE_CHILDTYPE);
+    localStorage.setItem(CSAAT_VIDEO_SLICE_ACTIVE_VIDEO, props.video.id);
 
-    if(childType === CHILD_TYPES.TYPICAL){
-      pathname = `/t_videos/${props.video.id}`
-    }else{
-      pathname = `/at_videos/${props.video.id}`
+    if (childType === CHILD_TYPES.TYPICAL) {
+      pathname = `/t_videos/${props.video.id}`;
+    } else {
+      pathname = `/at_videos/${props.video.id}`;
     }
     props.history.push({
       pathname: pathname,
     });
   };
 
-  const toogleTooltip = async (option) => {
-    if(!mounted.current) return
+  const openDetailModal = () => {
+    setTooltip(true);
+  };
 
-    if (option === 1) {
-      timeout.current = setTimeout(() => {
-        try{
-          const res = axios.get(`${BASE_URL}/video-info/${props.video.id}/`)
-          setTooltipObj(res.data);
-          setTimeout(() => {
-            setTooltip(true)
-          }, 200);
-        }catch(err) {
-          // console.log(err)
-        }
-      }, 1000);
-    } else {
-      // console.log('out')
-      clearTimeout(timeout.current);
-      setTooltip(false)
-    }
+  const closeDetailModal = () => {
+    setTooltip(false);
   };
 
   // open the video play modal
@@ -66,11 +69,11 @@ const VideoGridIItem = (props) => {
     if (!props.video.video) {
       return;
     }
-    setModal(true)
+    setModal(true);
   };
 
   const closeModalWindow = () => {
-    setModal(false)
+    setModal(false);
   };
 
   return (
@@ -78,6 +81,21 @@ const VideoGridIItem = (props) => {
       <div className={classes.player} onClick={onClickHandler}>
         <VideoPlayer keyf={props.video.id} video={props.video} />
       </div>
+
+      {detail ? (
+        <div className={classes.detail}>
+          {localStorage.getItem(CSAAT_VIDEO_SLICE_CHILDTYPE) ===
+          CHILD_TYPES.TYPICAL ? (
+            <Fragment>
+              <span>Child Unique No : {detail.child_unique_no}</span>
+              <span>Child Sequence No : {detail.child_sequence_no}</span>
+            </Fragment>
+          ) : (
+            <span>Child Clinic No : {detail.child_clinic_no}</span>
+          )}
+          <span>Child Name : {detail.child_name}</span>
+        </div>
+      ) : null}
 
       <div className={classes.info}>
         {props.tab === TABS.ALL ? (
@@ -108,11 +126,7 @@ const VideoGridIItem = (props) => {
           </div>
         ) : null}
 
-        <div
-          className={classes.details}
-          onMouseEnter={() => toogleTooltip(1)}
-          onMouseLeave={() => toogleTooltip(0)}
-        >
+        <div className={classes.details} onClick={openDetailModal}>
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -120,6 +134,7 @@ const VideoGridIItem = (props) => {
             height="24"
             viewBox="0 0 24 24"
           >
+            <title>More Details</title>
             <path d="M18.984 3h-13.969q-0.844 0-1.43 0.586t-0.586 1.43v13.969q0 0.844 0.586 1.43t1.43 0.586h13.969q0.844 0 1.43-0.586t0.586-1.43v-13.969q0-0.844-0.586-1.43t-1.43-0.586zM12 18q-0.516 0-0.891-0.375t-0.375-0.891 0.375-0.891 0.891-0.375q0.563 0 0.914 0.375t0.352 0.891-0.352 0.891-0.914 0.375zM15 10.594q-0.563 0.844-1.055 1.242t-0.773 0.914q-0.141 0.234-0.188 0.492t-0.047 0.961h-1.828v-0.938t0.328-1.078q0.328-0.656 0.938-1.102t0.984-1.055q0.328-0.375 0.281-0.938t-0.445-0.984-1.195-0.422-1.219 0.492-0.563 1.008l-1.641-0.703q0.328-0.984 1.195-1.734t2.227-0.75q1.078 0 1.852 0.445t1.148 1.055q0.328 0.563 0.422 1.453t-0.422 1.641z"></path>
           </svg>
         </div>
@@ -129,14 +144,11 @@ const VideoGridIItem = (props) => {
         </button>
       </div>
 
-      {tooltip ? <Tooltip obj={tooltipObj} /> : null}
-      
+      {tooltip ? <Tooltip obj={detail} close={closeDetailModal} /> : null}
+
       {modal ? (
-          <SingleVideoPlayerModal
-            video={props.video}
-            close={closeModalWindow}
-          />
-        ) : null}
+        <SingleVideoPlayerModal video={props.video} close={closeModalWindow} />
+      ) : null}
     </div>
   );
 };

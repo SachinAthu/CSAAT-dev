@@ -6,7 +6,6 @@ import axios from "axios";
 import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
-import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import { BASE_URL } from "../../../config";
 
 import { addVideo } from "../../../actions/VideoActions";
@@ -53,7 +52,17 @@ class AddVideo extends Component {
     this.fetchCameraAngles();
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    const els = document.querySelectorAll('video')
+    if(els.length > 0){
+      for(let i = 0; i < els.length; i++) {
+        els[i].pause()
+        els[i].removeAttribute('src')
+        els[i].remove()
+      }
+
+    }
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// functions ///////////////////////////////////////////
@@ -205,15 +214,14 @@ class AddVideo extends Component {
   getDurationThumnail = (file) => {
     return new Promise((resolve, reject) => {
       const self = this
-
       // load the file to a video player
       const videoPlayer = document.createElement('video');
       videoPlayer.setAttribute('src', URL.createObjectURL(file));
       videoPlayer.load();
       videoPlayer.addEventListener('error', (ex) => {
-          reject("error when loading video file", ex);
+        reject("error when loading video file", ex);
       });
-
+      
       // load metadata of the video to get video duration and dimensions
       videoPlayer.addEventListener('loadedmetadata', () => {
           // seek to user defined timestamp (in seconds) if possible
@@ -246,6 +254,7 @@ class AddVideo extends Component {
                       'filename': filename,
                       'duration': Math.round(videoPlayer.duration)
                     }
+                    // console.log(res)
                     resolve(res);
                   },
                   "image/jpeg",
@@ -309,6 +318,7 @@ class AddVideo extends Component {
   // trigger when form submit button clicked
   onSubmit = async(e) => {
     e.preventDefault();
+
     const {
       name,
       camera,
@@ -341,7 +351,6 @@ class AddVideo extends Component {
     formData.append("name", name);
     formData.append("video", video);
     formData.append("file_type", video.type);
-
     // get duration and thumbnail
     try{
       var res = await this.getDurationThumnail(video);
@@ -520,13 +529,12 @@ class AddVideo extends Component {
                 </div>
 
                 <div className={classes.progress_2}>
-                  <div className={`progress ${classes.progressBar}`}>
+                  <div className={`${classes.progressBar}`}>
                     <div
-                      className="progress-bar"
                       role="progressbar"
                       style={{
                         width: `${progress}%`,
-                        background: "rgb(0, 156, 234)",
+                        background: "rgb(0, 156, 234)"
                       }}
                       aria-valuenow={progress}
                       aria-valuemin="0"
@@ -568,8 +576,7 @@ class AddVideo extends Component {
                 type="submit"
                 className={`.button_primary ${classes.submitbtn}`}
               >
-                {loading ? <BtnSpinner /> : null}
-                ADD
+                {loading ? "Uploading..." : "Upload"}
               </button>
             </div>
           </form>

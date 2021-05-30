@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 
 import ModalFrame from "../modalFrame/ModalFrame";
 import classes from "../../../assets/css/AddModal.module.css";
-import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import { BASE_URL } from "../../../config";
 
 import { addCameraAngle } from "../../../actions/CameraAngleActions";
@@ -196,8 +195,7 @@ class AddCameraAngle extends Component {
                 type="submit"
                 className={`.button_primary ${classes.submitbtn}`}
               >
-                {requesting ? <BtnSpinner /> : null}
-                ADD
+                {requesting ? "Adding..." : "Add"}
               </button>
             </div>
           </form>

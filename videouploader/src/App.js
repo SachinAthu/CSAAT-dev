@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 
 import classes from "./App.module.css";
 import Navbar from "./components/layouts/navbar/Navbar";
-import Header from "./components/layouts/header/Header";
+// import Header from "./components/layouts/header/Header";
 import Homepage from "./components/homepage/Homepage";
 import TypicalChildren from "./components/children/typicalChildren/TypicalChildren";
 import ATypicalChildren from "./components/children/aTypicalChildren/ATypicalChildren";
@@ -22,7 +22,7 @@ const App = (props) => {
         <div className={classes.app}>
           <Navbar />
 
-          <Header />
+          {/* <Header /> */}
 
           <main className={classes.main}>
 
@@ -40,6 +40,10 @@ const App = (props) => {
               <Route exact path="/camera_angles" render={(props) => <ErrorBoundry><CameraAngles {...props} /></ErrorBoundry>} />
 
               <Route exact path="/" render={(props) => <ErrorBoundry><Homepage {...props} /></ErrorBoundry>} />
+
+              <Route path="*">
+                <div><h1>404 Not Found</h1></div>
+              </Route>
             </Switch>
           </main>
         </div>

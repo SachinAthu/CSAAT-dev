@@ -1,77 +1,78 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { connect } from 'react-redux'
+import { connect } from "react-redux";
 
 import classes from "./Navbar.module.css";
 import logo from "../../../assets/img/logo.png";
-import { CSAAT_VIDEO_SLICE_ACTIVE_NAV, NAV_LINKS } from "../../../actions/Types";
-import { setNav } from '../../../actions/NavigationActions'
+import {
+  CSAAT_VIDEO_SLICE_ACTIVE_NAV,
+  NAV_LINKS,
+} from "../../../actions/Types";
+import { setNav } from "../../../actions/NavigationActions";
 
 class Navbar extends Component {
   static propTypes = {
-      setNav: PropTypes.func.isRequired,
+    setNav: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
-    const el = document.getElementsByClassName(`${classes.nav}`)[0]
-    const links = el.getElementsByTagName('a')
-    for(let i = 0; i < links.length; i++) {
-        links[i].addEventListener('click', this.setNav.bind(this, links[i]));
+    const el = document.getElementsByClassName(`${classes.nav}`)[0];
+    const links = el.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].addEventListener("click", this.setNav.bind(this, links[i]));
     }
   }
 
   componentWillUnmount() {
-    const el = document.getElementsByClassName(`${classes.nav}`)[0]
-    const links = el.getElementsByTagName('a')
-    for(let i = 0; i < links.length; i++) {
-        links[i].removeEventListener('click', this.setNav.bind(this, links[i]));
+    const el = document.getElementsByClassName(`${classes.nav}`)[0];
+    const links = el.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].removeEventListener("click", this.setNav.bind(this, links[i]));
     }
-    localStorage.removeItem(CSAAT_VIDEO_SLICE_ACTIVE_NAV)
+    localStorage.removeItem(CSAAT_VIDEO_SLICE_ACTIVE_NAV);
   }
 
   setNav = (link) => {
-    let l = ''
+    let l = "";
 
-    switch(link.innerText){
-        case 'CSAAT Home':
-            break
-        case 'Home':
-            l = NAV_LINKS.NAV_HOME
-            break
-        case 'Typical Videos':
-            l = NAV_LINKS.NAV_TYPICAL_VIDEO
-            break
-        case 'Atypical Videos':
-            l = NAV_LINKS.NAV_ATPICAL_VIDEO
-            break
-        default:
-            return
+    switch (link.innerText) {
+      case "Home":
+        l = NAV_LINKS.NAV_HOME;
+        break;
+      case "Typical Videos":
+        l = NAV_LINKS.NAV_TYPICAL_VIDEO;
+        break;
+      case "Atypical Videos":
+        l = NAV_LINKS.NAV_ATPICAL_VIDEO;
+        break;
+      default:
+        return;
     }
 
-    this.props.setNav(l)
-    localStorage.setItem(CSAAT_VIDEO_SLICE_ACTIVE_NAV, l)
+    this.props.setNav(l);
+    localStorage.setItem(CSAAT_VIDEO_SLICE_ACTIVE_NAV, l);
 
-    this.removeSelected()
-    link.classList.add(`${classes.nav_a_selected}`)
-  }
+    this.removeSelected();
+    link.classList.add(`${classes.nav_a_selected}`);
+  };
 
   removeSelected = () => {
-    const el = document.getElementsByClassName(`${classes.nav}`)[0]
-    if(!el) return
-    const links = el.getElementsByTagName('a')
-    for(let i = 0; i < links.length; i++) {
-        links[i].classList.remove(`${classes.nav_a_selected}`)
+    const el = document.getElementsByClassName(`${classes.nav}`)[0];
+    if (!el) return;
+    const links = el.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
+      links[i].classList.remove(`${classes.nav_a_selected}`);
     }
-  }
+  };
 
   render() {
-    let link = null
-    this.removeSelected()
-    if(this.props.currentNav) {
-        link = this.props.currentNav
-    }else {
-        link = localStorage.getItem(CSAAT_VIDEO_SLICE_ACTIVE_NAV)
+    let link = null;
+    this.removeSelected();
+    if (this.props.currentNav) {
+      link = this.props.currentNav;
+    } else {
+      link = localStorage.getItem(CSAAT_VIDEO_SLICE_ACTIVE_NAV);
     }
 
     return (
@@ -88,7 +89,7 @@ class Navbar extends Component {
         <nav className={classes.nav}>
           <ul>
             <li className={classes.csaat_home}>
-              <Link to="/">
+              <a href="http://127.0.0.1:8000">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -99,10 +100,29 @@ class Navbar extends Component {
                   <path d="M9.984 9.984h4.031q0-0.797-0.609-1.383t-1.406-0.586-1.406 0.586-0.609 1.383zM18.984 9.281l3 2.719h-3v8.016h-4.969v-6h-4.031v6h-4.969v-8.016h-3l9.984-9 3.984 3.609v-2.625h3v5.297z"></path>
                 </svg>
                 <span>CSAAT Home</span>
-              </Link>
+              </a>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_HOME ? classes.nav_li_selected : null}>
+            <li className={classes.uploader_home}>
+              <a href="http://127.0.0.1:8000/video-uploader" target="_blank" rel="noreferrer">
+                <svg
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M14.016 12.984h3l-5.016-4.969-5.016 4.969h3v4.031h4.031v-4.031zM19.359 10.031q1.922 0.141 3.281 1.57t1.359 3.398q0 2.063-1.477 3.539t-3.539 1.477h-12.984q-2.484 0-4.242-1.758t-1.758-4.242q0-2.203 1.57-3.961t3.773-1.992q0.984-1.828 2.766-2.953t3.891-1.125q2.531 0 4.711 1.781t2.648 4.266z"></path>
+                </svg>
+                <span>Video Uploader</span>
+              </a>
+            </li>
+
+            <li
+              className={
+                link === NAV_LINKS.NAV_HOME ? classes.nav_li_selected : null
+              }
+            >
               <Link to="/">
                 <svg
                   version="1.1"
@@ -117,7 +137,13 @@ class Navbar extends Component {
               </Link>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_TYPICAL_VIDEO ? classes.nav_li_selected : null}>
+            <li
+              className={
+                link === NAV_LINKS.NAV_TYPICAL_VIDEO
+                  ? classes.nav_li_selected
+                  : null
+              }
+            >
               <Link to="/t_videos">
                 <svg
                   version="1.1"
@@ -132,7 +158,13 @@ class Navbar extends Component {
               </Link>
             </li>
 
-            <li className={ link === NAV_LINKS.NAV_ATPICAL_VIDEO ? classes.nav_li_selected : null}>
+            <li
+              className={
+                link === NAV_LINKS.NAV_ATPICAL_VIDEO
+                  ? classes.nav_li_selected
+                  : null
+              }
+            >
               <Link to="/at_videos">
                 <svg
                   version="1.1"
@@ -161,7 +193,7 @@ class Navbar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    currentNav: state.navigationReducer.currentNav,
-})
+  currentNav: state.navigationReducer.currentNav,
+});
 
-export default connect(mapStateToProps, { setNav }) (Navbar);
+export default connect(mapStateToProps, { setNav })(Navbar);

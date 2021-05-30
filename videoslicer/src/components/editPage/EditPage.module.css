@@ -168,6 +168,15 @@
   justify-content: center;
 }
 
+.footerDiv > span{
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .slicebtn {
   position: absolute;
   top: 0;

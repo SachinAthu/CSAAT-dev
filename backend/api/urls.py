@@ -57,6 +57,7 @@ urlpatterns = [
 
     path('add-t-video/', addTVideo, name='add-t-video'),
     path('add-at-video/', addATVideo, name='add-at-video'),
+    path('update-video/<int:pk>/', updateVideo, name='update-video'),
     path('delete-video/<int:pk>/', deleteVideo, name='delete-video'),
     path('delete-videos/', deleteVideos, name='delete-videos'),
 

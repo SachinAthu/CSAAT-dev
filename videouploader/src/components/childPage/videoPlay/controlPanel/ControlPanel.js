@@ -24,21 +24,37 @@ class ControlPanel extends Component {
       playState: PLAY_STATUS.STOP,
       videoLoadCount: 0,
       currentTooltipTime: 0,
+      width: 0
     };
+    this.lastCalled = 0;
   }
 
   componentDidMount() {
     this.setMax();
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.video_list !== this.props.video_list && this.lastCalled <= Date.now() - 0.001){
+      this.setMax();
+    }
+  }
+
   componentWillUnmount() {
     this.props.tooglePlayMode(PLAY_MODES.SINGLE);
+    if(this.maxVideoEl)
+      this.maxVideoEl.removeEventListener('timeupdate', this.timeUpdate)
   }
 
   /////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////// functions ////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   setMax = () => {
+    // var delay = 0.0000000001;
+    //   if (this.lastCalled >= Date.now() - delay) {
+    //     return;
+    //   }
+    this.lastCalled = Date.now();
+
     const videos = this.props.videos;
     let max = 0;
     let maxV = {};
@@ -55,6 +71,8 @@ class ControlPanel extends Component {
   };
 
   initializeTimeline = () => {
+    gsap.registerPlugin(Draggable);
+
     const self = this;
     this.timeline = document.getElementById("control_panel_timeline");
     this.timelineDrag = document.getElementById("control_panel_timeline_drag");
@@ -72,22 +90,7 @@ class ControlPanel extends Component {
     //   gsap.ticker.remove(self.timeUpdateListener);
     // };
 
-    this.maxVideoEl.ontimeupdate = function () {
-      if (self.props.playMode === PLAY_MODES.ALL) {
-        const offset = (
-          (this.currentTime / this.duration) *
-          (self.timeline.offsetWidth - 10)
-        ).toFixed(4);
-        gsap.set(self.timelineDrag, {
-          x: offset,
-        });
-        self.timelineHighlited.style.width = `${offset}px`;
-        self.setState({ currentTime: this.currentTime });
-      }
-    };
-
-    gsap.registerPlugin(Draggable);
-
+    this.maxVideoEl.addEventListener('timeupdate', this.timeUpdate)
     // make timeline draggable
     Draggable.create(this.timelineDrag, {
       type: "x",
@@ -111,6 +114,22 @@ class ControlPanel extends Component {
       },
     });
   };
+
+  timeUpdate = () => {
+    console.log('called')
+    if (this.props.playMode === PLAY_MODES.ALL) {
+      const offset = (
+        (this.maxVideoEl.currentTime / this.maxVideoEl.duration) *
+        (this.timeline.offsetWidth - 10)
+      ).toFixed(4);
+      gsap.set(this.timelineDrag, {
+        x: offset,
+      });
+      console.log(offset)
+      // this.timelineHighlited.style.width = `${offset}px`;
+      this.setState({ currentTime: this.maxVideoEl.currentTime, width: offset });
+    }
+  }
 
   convertSec = (sec) => {
     try {
@@ -160,17 +179,17 @@ class ControlPanel extends Component {
     this.setState({ playState: PLAY_STATUS.STOP, currentTime: 0 });
   };
 
-  backwardForwardAll = (type, len) => {
+  backwardForwardAll = (type) => {
     this.props.tooglePlayMode(PLAY_MODES.ALL);
     const videos = this.props.videos;
     var t = this.state.currentTime;
 
     if (type === 0) {
       // backward
-      t = t - len;
+      t = t - 5;
     } else {
       // forward
-      t = t + len;
+      t = t + 5;
     }
 
     for (let i = 0; i < videos.length; i++) {
@@ -254,6 +273,7 @@ class ControlPanel extends Component {
           <div
             id="control_panel_timeline_highlited"
             className={classes.timeline_highlighted}
+            style={{width: `${this.state.width}px`}}
           ></div>
 
           <div
@@ -273,23 +293,7 @@ class ControlPanel extends Component {
           </span>
 
           <button
-            onClick={this.backwardForwardAll.bind(this, 0, 30)}
-            className={classes.backwardBtn}
-          >
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-            >
-              <title>Backward 30s</title>
-              <path d="M27.297 2.203c0.391-0.391 0.703-0.25 0.703 0.297v23c0 0.547-0.313 0.688-0.703 0.297l-11.094-11.094c-0.094-0.094-0.156-0.187-0.203-0.297v11.094c0 0.547-0.313 0.688-0.703 0.297l-11.094-11.094c-0.094-0.094-0.156-0.187-0.203-0.297v10.594c0 0.547-0.453 1-1 1h-2c-0.547 0-1-0.453-1-1v-22c0-0.547 0.453-1 1-1h2c0.547 0 1 0.453 1 1v10.594c0.047-0.109 0.109-0.203 0.203-0.297l11.094-11.094c0.391-0.391 0.703-0.25 0.703 0.297v11.094c0.047-0.109 0.109-0.203 0.203-0.297z"></path>
-            </svg>
-          </button>
-
-          <button
-            onClick={this.backwardForwardAll.bind(this, 0, 5)}
+            onClick={this.backwardForwardAll.bind(this, 0)}
             className={classes.backwardBtn}
           >
             <svg
@@ -349,7 +353,7 @@ class ControlPanel extends Component {
           </button>
 
           <button
-            onClick={this.backwardForwardAll.bind(this, 1, 5)}
+            onClick={this.backwardForwardAll.bind(this, 1)}
             className={classes.forwardBtn}
           >
             <svg
@@ -361,22 +365,6 @@ class ControlPanel extends Component {
             >
               <title>Forward 5s</title>
               <path d="M0.703 25.797c-0.391 0.391-0.703 0.25-0.703-0.297v-23c0-0.547 0.313-0.688 0.703-0.297l11.094 11.094c0.094 0.094 0.156 0.187 0.203 0.297v-10.594c0-0.547 0.453-1 1-1h2c0.547 0 1 0.453 1 1v22c0 0.547-0.453 1-1 1h-2c-0.547 0-1-0.453-1-1v-10.594c-0.047 0.109-0.109 0.203-0.203 0.297z"></path>
-            </svg>
-          </button>
-
-          <button
-            onClick={this.backwardForwardAll.bind(this, 1, 30)}
-            className={classes.forwardBtn}
-          >
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-            >
-              <title>Forward 30s</title>
-              <path d="M0.703 25.797c-0.391 0.391-0.703 0.25-0.703-0.297v-23c0-0.547 0.313-0.688 0.703-0.297l11.094 11.094c0.094 0.094 0.156 0.187 0.203 0.297v-11.094c0-0.547 0.313-0.688 0.703-0.297l11.094 11.094c0.094 0.094 0.156 0.187 0.203 0.297v-10.594c0-0.547 0.453-1 1-1h2c0.547 0 1 0.453 1 1v22c0 0.547-0.453 1-1 1h-2c-0.547 0-1-0.453-1-1v-10.594c-0.047 0.109-0.109 0.203-0.203 0.297l-11.094 11.094c-0.391 0.391-0.703 0.25-0.703-0.297v-11.094c-0.047 0.109-0.109 0.203-0.203 0.297z"></path>
             </svg>
           </button>
 

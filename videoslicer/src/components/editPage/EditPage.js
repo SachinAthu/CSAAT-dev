@@ -11,8 +11,8 @@ import NoVideoSVG from "../../assets/svg/no_videos.svg";
 import PageSpinner from "../layout/spinners/page/PageSpinner";
 import Controls from "./controls/Controls";
 import BtnSpinner from "../layout/spinners/btn/BtnSpinner";
-import DeleteConfirmAlert from '../modals/deleteConfirmAlert/DeleteConfirmAlert'
-import ResultAlert from '../modals/resultAlert/ResultAlert'
+import DeleteConfirmAlert from "../modals/deleteConfirmAlert/DeleteConfirmAlert";
+import ResultAlert from "../modals/resultAlert/ResultAlert";
 
 import {
   CHILD_TYPES,
@@ -29,12 +29,12 @@ class EditPage extends Component {
       loading: false,
       currentTime: 0,
       ended: false,
-      markers: [],
       frames: [],
       slicing: false,
       deleting: false,
       resultModal: false,
       res: false,
+      selectedTime: 0,
     };
     this.mounted = false;
   }
@@ -43,6 +43,7 @@ class EditPage extends Component {
     this.mounted = true;
     this.fetchVideo();
     this.fetchVideoClip();
+    this.markerLength = 0;
   }
 
   componentWillUnmount() {
@@ -55,7 +56,6 @@ class EditPage extends Component {
       videoEl.load();
       videoEl.remove();
     }
-
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ class EditPage extends Component {
   fetchVideoClip = async () => {
     if (!this.mounted) return;
 
-    this.setState({ videoClip: '' })
+    this.setState({ videoClip: "" });
 
     try {
       const res = await axios.get(
@@ -166,23 +166,23 @@ class EditPage extends Component {
     }
   };
 
-  highlightArea = (markers) => {
+  highlightArea = () => {
     // get max and min points
     var max = null;
     var min = null;
-    if (markers[0].time > markers[1].time) {
-      max = markers[0];
-      min = markers[1];
+    if (this.marker1 > this.marker2) {
+      max = this.marker1;
+      min = this.marker2;
     } else {
-      max = markers[1];
-      min = markers[0];
+      max = this.marker2;
+      min = this.marker1;
     }
     // console.log("min", min);
     // console.log("max", max);
 
     // get width
-    var sw = this.timeline.offsetWidth * (min.time / this.videoEl.duration);
-    var ew = this.timeline.offsetWidth * (max.time / this.videoEl.duration);
+    var sw = this.timeline.offsetWidth * (min / this.videoEl.duration);
+    var ew = this.timeline.offsetWidth * (max / this.videoEl.duration);
     var width = ew - sw;
     // console.log("width ", width);
 
@@ -198,35 +198,48 @@ class EditPage extends Component {
   };
 
   resetEditor = () => {
-    this.stopVideo()
+    this.stopVideo();
 
-    const markers = document.getElementsByClassName(`${classes.timeline_marker}`)
-    
-    for(let i = 0; i < markers.length; i++) {
-      if(markers[i]){
-        this.timeline.removeChild(markers[i])
-        markers[i].remove()
+    const markers = document.getElementsByClassName(
+      `${classes.timeline_marker}`
+    );
+
+    for (let i = 0; i < markers.length; i++) {
+      if (markers[i]) {
+        this.timeline.removeChild(markers[i]);
+        markers[i].remove();
       }
     }
 
-    const highlitedArea = document.getElementById('timeline_progress')
-    if(highlitedArea) {
-      this.timeline.removeChild(highlitedArea)
+    const highlitedArea = document.getElementById("timeline_progress");
+    if (highlitedArea) {
+      this.timeline.removeChild(highlitedArea);
     }
-    this.setState({ markers: [] })
-  }
+    this.markerLength = 0;
+  };
 
   closeDeleteModal = (res) => {
-    if(res){
-      this.setState({ deleting: false, videoClip: '' })
-    }else{
-      this.setState({ deleting: false })
+    if (res) {
+      this.setState({ deleting: false, videoClip: "" });
+    } else {
+      this.setState({ deleting: false });
     }
-  }
+  };
 
   closeResultModal = () => {
-    this.setState({ resultModal: false, res: false })
-  }
+    this.setState({ resultModal: false, res: false });
+  };
+
+  convertSec = (sec) => {
+    try {
+      let measuredTime = new Date(null);
+      measuredTime.setSeconds(parseInt(sec)); // specify value of SECONDS
+      let MHSTime = measuredTime.toISOString().substr(11, 8);
+      return MHSTime;
+    } catch (err) {
+      return "00:00:00";
+    }
+  };
 
   /////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////// event listeners ////////////////////////////////////
@@ -262,33 +275,32 @@ class EditPage extends Component {
   };
 
   timelineDragClicked = () => {
-    if (this.state.markers.length >= 2) {
+    if (this.markerLength >= 2) {
       return;
     }
 
     // set marker
     const self = this;
-    var markers = [...this.state.markers];
 
     var marker = document.createElement("div");
-    var markerTop = document.createElement('div')
-    var markerBody = document.createElement('div')
+    var markerTop = document.createElement("div");
+    var markerBody = document.createElement("div");
 
     marker.classList.add(`${classes.timeline_marker}`);
 
-    var id = "marker_" + markers.length.toString();
+    var id = this.markerLength;
     markerTop.id = id;
-    markerTop.classList.add(`${classes.timeline_marker_top}`)
+    markerTop.classList.add(`${classes.timeline_marker_top}`);
     markerTop.innerHTML = `
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path d="M18.984 12.984h-13.969v-1.969h13.969v1.969z"></path>
     </svg>
     `;
 
-    markerBody.classList.add(`${classes.timeline_marker_body}`)
+    markerBody.classList.add(`${classes.timeline_marker_body}`);
 
-    marker.appendChild(markerTop)
-    marker.appendChild(markerBody)
+    marker.appendChild(markerTop);
+    marker.appendChild(markerBody);
 
     this.timeline.appendChild(marker);
 
@@ -305,35 +317,45 @@ class EditPage extends Component {
       });
     }
 
-    markers.push({
-      id: id,
-      time: this.videoEl.currentTime,
-    });
-    this.setState({ markers: markers });
+    if (this.markerLength === 0) {
+      this.marker1 = this.videoEl.currentTime;
+    } else {
+      this.marker2 = this.videoEl.currentTime;
+    }
+    const l = this.markerLength;
+    this.markerLength = l + 1;
+
+    // console.log("marker 1", self.marker1);
+    // console.log("marker 2", self.marker2);
+    // console.log("len", this.markerLength);
 
     // highlight selected area
-    if (markers.length === 2) {
-      this.highlightArea(markers);
+    if (this.markerLength === 2) {
+      this.highlightArea();
+
+      // update selected time
+      const t = Math.abs(this.marker1 - this.marker2);
+      this.setState({ selectedTime: t });
     }
 
     markerTop.onclick = function () {
       // remove marker
       self.timeline.removeChild(marker);
-      var m = [...self.state.markers];
-      var m2 = [];
-      for (let i = 0; i < m.length; i++) {
-        if (m[i].id !== this.id) {
-          m2.push(m[i]);
-        }
-      }
-      self.setState({ markers: m2 });
+
+      const l = self.markerLength;
+      self.markerLength = l - 1;
+
+      // console.log("marker 1", self.marker1);
+      // console.log("marker 2", self.marker2);
+      // console.log("len", self.markerLength);
 
       // remove highlited area
-      if (self.state.markers.length < 2) {
-        const el = document.getElementById('timeline_progress')
-        if(el){
-          self.timeline.removeChild(el)
+      if (self.markerLength < 2) {
+        const el = document.getElementById("timeline_progress");
+        if (el) {
+          self.timeline.removeChild(el);
         }
+        self.setState({ selectedTime: 0 });
       }
     };
   };
@@ -343,59 +365,66 @@ class EditPage extends Component {
   };
 
   sliceVideo = async () => {
-    const markers = [...this.state.markers]
-
-    if(markers.length < 2) {
-      return
+    if (this.markerLength < 2) {
+      return;
     }
 
     // get max and min points
-    var max = null
-    var min = null
-    if(markers[0].time > markers[1].time){
-      max = markers[0]
-      min = markers[1]
-    }else{
-      max = markers[1]
-      min = markers[0]
+    var max = null;
+    var min = null;
+    if (this.marker1.time > this.marker2.time) {
+      max = this.marker1;
+      min = this.marker2;
+    } else {
+      max = this.marker2;
+      min = this.marker1;
     }
-    var startTime = Math.round(min.time)
-    var endTime = Math.round(max.time)
+    var startTime = Math.round(min);
+    var endTime = Math.round(max);
     // console.log(startTime)
     // console.log(endTime)
 
-    this.setState({ slicing: true })
+    this.setState({ slicing: true });
 
-    try{
+    try {
       const res = await axios(`${BASE_URL}/add-video-clip/`, {
-        method: 'POST',
+        method: "POST",
         data: {
-          "video_id": this.state.video.id,
-          "start_time": startTime,
-          "end_time": endTime
+          video_id: this.state.video.id,
+          start_time: startTime,
+          end_time: endTime,
         },
         headers: {
           "Content-Type": "application/json",
         },
-      })
-      if(res){
-        this.setState({ slicing: false, resultModal: true, res: true })
+      });
+      if (res) {
+        this.setState({ slicing: false, resultModal: true, res: true });
         // console.log(res.data)
-        this.fetchVideoClip()
-        this.resetEditor()
+        this.fetchVideoClip();
+        this.resetEditor();
+
+        // update video record
+        const res = await axios(`${BASE_URL}/update-video/${this.state.video.id}/`, {
+          method: 'PUT',
+          data: {
+            "sliced": true
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
       }
-    }catch(err){
-      this.setState({ slicing: false, resultModal: true, res: false })
+    } catch (err) {
+      this.setState({ slicing: false, resultModal: true, res: false });
       // console.log(err)
-      this.setState({ slicing: false })
+      this.setState({ slicing: false });
     }
-    setTimeout(() => {
-    }, 5000)
   };
 
   deleteVideoClip = () => {
-    this.setState({ deleting: true })
-  }
+    this.setState({ deleting: true });
+  };
 
   render() {
     // console.log(this.videoEl.currentTime)
@@ -474,6 +503,10 @@ class EditPage extends Component {
               </div>
 
               <div className={classes.footerDiv}>
+                <span>
+                  Selected time slot: {this.convertSec(this.state.selectedTime)}
+                </span>
+
                 <Controls
                   currentTime={this.videoEl ? this.state.currentTime : 0}
                   duration={video ? video.duration : 0}
@@ -484,7 +517,11 @@ class EditPage extends Component {
                   forward={this.forwardVideo}
                 />
 
-                <button type="submit" className={classes.slicebtn} onClick={this.sliceVideo}>
+                <button
+                  type="submit"
+                  className={classes.slicebtn}
+                  onClick={this.sliceVideo}
+                >
                   {this.state.slicing ? <BtnSpinner /> : null}
                   Slice
                 </button>
@@ -511,12 +548,16 @@ class EditPage extends Component {
           </div>
         </div>
 
-        {this.state.deleting ? <DeleteConfirmAlert 
-          close={(res) => this.closeDeleteModal(res)}
-          id={videoClip.id}
-        /> : null}
+        {this.state.deleting ? (
+          <DeleteConfirmAlert
+            close={(res) => this.closeDeleteModal(res)}
+            id={videoClip.id}
+          />
+        ) : null}
 
-        {this.state.resultModal ? <ResultAlert res={this.state.res} close={this.closeResultModal} /> : null}
+        {this.state.resultModal ? (
+          <ResultAlert res={this.state.res} close={this.closeResultModal} />
+        ) : null}
       </Fragment>
     );
   }
