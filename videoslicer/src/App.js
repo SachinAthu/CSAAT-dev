@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 
 import classes from "./App.module.css";
 import Navbar from "./components/layout/navbar/Navbar";
-import Header from "./components/layout/header/Header";
+// import Header from "./components/layout/header/Header";
 import Homepage from "./components/homepage/Homepage";
 import TypicalVideos from "./components/typicalVideos/TypicalVideos";
 import ATypicalVideos from "./components/atypicalVideos/AtypicalVideos";
@@ -19,7 +19,7 @@ const App = () => {
         <div className={classes.app}>
           <Navbar />
 
-          <Header />
+          {/* <Header /> */}
 
           <main className={classes.main}>
             <Switch>

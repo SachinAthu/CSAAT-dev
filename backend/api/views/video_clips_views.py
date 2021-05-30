@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.conf import settings
 from moviepy.editor import *
-import shutil
 import os
+import platform
 
 from api.models import VideoClips, Videos
 from api.serializers import VideoClipsSerializer
@@ -36,27 +36,54 @@ def singleVideoClip(request, pk):
 # add one video clip
 @api_view(['POST'])
 def addVideoClip(request):
+    # create sliced_videos folder if it is not
+    def create_sliced_videos_d(path):
+        if not os.path.exists(path):
+            os.mkdir(path)
+
     print(request.data)
+
     video = Videos.objects.get(id=request.data['video_id'])
     clip_name = ''
     clip_file_name = ''
+    child_type = ''
+    video_save = ''
+    
     if not video.tChild == None:
+        child_type = 'typical'
         child = video.tChild
         clip_name = f'{child.unique_no}_{child.sequence_no}_{video.id}'
         clip_file_name = f'{child.unique_no}_{child.sequence_no}_{video.id}{video.file_extension}'
+        video_save = f'/sliced_videos/typical/{clip_file_name}'
     else:
+        child_type = 'atypical'
         child = video.atChild
         clip_name = f'{child.clinic_no}_{video.id}'
         clip_file_name = f'{child.clinic_no}_{video.id}{video.file_extension}'
+        video_save = f'/sliced_videos/atypical/{clip_file_name}'
 
-    clip = VideoFileClip(video.video.path).subclip(request.data['start_time'], request.data['end_time'])
-    clip_path = f'{settings.MEDIA_ROOT}/sliced_videos/{clip_file_name}'
-    clip.write_videofile(clip_path)
+    clip_path = ''
+    if platform.system().lower() == 'linux' or platform.system().lower() == 'Darwin' or platform.system().lower() == 'Mac':
+        clip_path = f'{settings.MEDIA_ROOT}/sliced_videos/{child_type}/{clip_file_name}'
+        create_sliced_videos_d(f'{settings.MEDIA_ROOT}/sliced_videos/typical')
+        create_sliced_videos_d(f'{settings.MEDIA_ROOT}/sliced_videos/atypical')
+    elif platform.system().lower() == 'windows':
+        clip_path = f'{settings.MEDIA_ROOT}\\sliced_videos\\{child_type}\\{clip_file_name}'
+        create_sliced_videos_d(f'{settings.MEDIA_ROOT}\\sliced_videos\\typical')
+        create_sliced_videos_d(f'{settings.MEDIA_ROOT}\\sliced_videos\\atypical')
+    else:
+        return Response({'msg': 'Unsupported operating system!'}, status = 500)
+
+    try:
+        clip = VideoFileClip(video.video.path).subclip(request.data['start_time'], request.data['end_time'])
+        clip.write_videofile(clip_path)
+    except:
+        return Response({'msg': 'Video slicing failed!'}, status = 500)
 
     data = {
         'video_id': request.data['video_id'],
         'name': clip_name,
-        'video': f'/sliced_videos/{clip_file_name}',
+        'video': video_save,
         'duration': request.data['end_time'] - request.data['start_time'],
         'file_type': video.file_type,
         'file_extension': video.file_extension
@@ -72,11 +99,9 @@ def addVideoClip(request):
         serializer.save()
     else:
         print(serializer.errors)
+        return Response({'msg': 'Video sliced. But adding to database failed!'}, status = 500)
 
     return Response({'msg': 'Successed!'}, status = 200)
-    # try:
-    # except:
-    #     return Response({'msg': 'Failed!'}, status = 500)
 
 
 # delete a video clip
@@ -91,6 +116,7 @@ def deleteVideoClip(request, pk):
         os.remove(path)
     except:
         print('video file deletion error')
+        return Response({'msg': 'Video file deleting failed!'}, status = 500)
 
     return Response('Video clip was deleted')
 
@@ -98,6 +124,14 @@ def deleteVideoClip(request, pk):
 # delete all video clips
 @api_view(['DELETE'])
 def deleteVideoClips(request):
-    VideoClips.objects.all().delete()
+    video_clips = VideoClips.objects.all().delete()
+
+    try:
+        for v in video_clips:
+            path = f'{settings.MEDIA_ROOT}{v.video}'
+            os.remove(path)
+    except:
+        print('video files deletion error')
+        return Response({'msg': 'Video files deleting failed!'}, status = 500)
 
     return Response('All Video clips were deleted')

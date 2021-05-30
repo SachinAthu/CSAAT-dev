@@ -365,7 +365,7 @@ class EditPage extends Component {
   };
 
   sliceVideo = async () => {
-    if (this.markerLength < 2) {
+    if (this.markerLength < 2 || this.state.slicing) {
       return;
     }
 
@@ -396,7 +396,7 @@ class EditPage extends Component {
         },
         headers: {
           "Content-Type": "application/json",
-        },
+        }
       });
       if (res) {
         this.setState({ slicing: false, resultModal: true, res: true });
@@ -523,7 +523,7 @@ class EditPage extends Component {
                   onClick={this.sliceVideo}
                 >
                   {this.state.slicing ? <BtnSpinner /> : null}
-                  Slice
+                  {this.state.slicing ? "Slicing..." : "Slice"}
                 </button>
               </div>
             </div>
@@ -551,7 +551,8 @@ class EditPage extends Component {
         {this.state.deleting ? (
           <DeleteConfirmAlert
             close={(res) => this.closeDeleteModal(res)}
-            id={videoClip.id}
+            video_clip_id={videoClip.id}
+            video_id={video.id}
           />
         ) : null}
 
