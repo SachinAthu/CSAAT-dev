@@ -6,7 +6,6 @@ import axios from "axios";
 import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import { BASE_URL } from "../../../config";
-import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
 
 import { addAudio } from "../../../actions/AudioActions";
@@ -252,9 +251,8 @@ class AddAudio extends Component {
                 </div>
 
                 <div className={classes.progress_2}>
-                  <div className={`progress ${classes.progressBar}`}>
+                  <div className={`${classes.progressBar}`}>
                     <div
-                      className="progress-bar"
                       role="progressbar"
                       style={{
                         width: `${progress}%`,
@@ -297,9 +295,7 @@ class AddAudio extends Component {
                 type="submit"
                 className={`.button_primary ${classes.submitbtn}`}
               >
-                {loading ? <BtnSpinner /> : null}
-
-                ADD
+                {loading ? "Uploading..." : "Upload"}
               </button>
             </div>
           </form>

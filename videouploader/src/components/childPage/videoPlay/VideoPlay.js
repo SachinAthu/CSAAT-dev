@@ -165,7 +165,7 @@ class VideoPlay extends Component {
             </div>
 
             <ErrorBoundry>
-              <ControlPanel />
+              <ControlPanel video_list={video_list} />
             </ErrorBoundry>
           </div>
         ) : (

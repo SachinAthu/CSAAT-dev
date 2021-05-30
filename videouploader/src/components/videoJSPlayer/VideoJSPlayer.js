@@ -22,6 +22,7 @@ class VideoJSPlayer extends Component {
           type: this.props.video.file_type,
         },
       ],
+      poster: "http://localhost:8000" + this.props.video.thumbnail,
     };
 
     this.player = videojs(

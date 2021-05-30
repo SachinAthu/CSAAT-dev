@@ -24,21 +24,37 @@ class ControlPanel extends Component {
       playState: PLAY_STATUS.STOP,
       videoLoadCount: 0,
       currentTooltipTime: 0,
+      width: 0
     };
+    this.lastCalled = 0;
   }
 
   componentDidMount() {
     this.setMax();
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.video_list !== this.props.video_list && this.lastCalled <= Date.now() - 0.001){
+      this.setMax();
+    }
+  }
+
   componentWillUnmount() {
     this.props.tooglePlayMode(PLAY_MODES.SINGLE);
+    if(this.maxVideoEl)
+      this.maxVideoEl.removeEventListener('timeupdate', this.timeUpdate)
   }
 
   /////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////// functions ////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   setMax = () => {
+    // var delay = 0.0000000001;
+    //   if (this.lastCalled >= Date.now() - delay) {
+    //     return;
+    //   }
+    this.lastCalled = Date.now();
+
     const videos = this.props.videos;
     let max = 0;
     let maxV = {};
@@ -55,6 +71,8 @@ class ControlPanel extends Component {
   };
 
   initializeTimeline = () => {
+    gsap.registerPlugin(Draggable);
+
     const self = this;
     this.timeline = document.getElementById("control_panel_timeline");
     this.timelineDrag = document.getElementById("control_panel_timeline_drag");
@@ -72,22 +90,7 @@ class ControlPanel extends Component {
     //   gsap.ticker.remove(self.timeUpdateListener);
     // };
 
-    this.maxVideoEl.ontimeupdate = function () {
-      if (self.props.playMode === PLAY_MODES.ALL) {
-        const offset = (
-          (this.currentTime / this.duration) *
-          (self.timeline.offsetWidth - 10)
-        ).toFixed(4);
-        gsap.set(self.timelineDrag, {
-          x: offset,
-        });
-        self.timelineHighlited.style.width = `${offset}px`;
-        self.setState({ currentTime: this.currentTime });
-      }
-    };
-
-    gsap.registerPlugin(Draggable);
-
+    this.maxVideoEl.addEventListener('timeupdate', this.timeUpdate)
     // make timeline draggable
     Draggable.create(this.timelineDrag, {
       type: "x",
@@ -111,6 +114,22 @@ class ControlPanel extends Component {
       },
     });
   };
+
+  timeUpdate = () => {
+    console.log('called')
+    if (this.props.playMode === PLAY_MODES.ALL) {
+      const offset = (
+        (this.maxVideoEl.currentTime / this.maxVideoEl.duration) *
+        (this.timeline.offsetWidth - 10)
+      ).toFixed(4);
+      gsap.set(this.timelineDrag, {
+        x: offset,
+      });
+      console.log(offset)
+      // this.timelineHighlited.style.width = `${offset}px`;
+      this.setState({ currentTime: this.maxVideoEl.currentTime, width: offset });
+    }
+  }
 
   convertSec = (sec) => {
     try {
@@ -254,6 +273,7 @@ class ControlPanel extends Component {
           <div
             id="control_panel_timeline_highlited"
             className={classes.timeline_highlighted}
+            style={{width: `${this.state.width}px`}}
           ></div>
 
           <div

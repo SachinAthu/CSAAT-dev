@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 
 import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
-import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import { BASE_URL } from '../../../config'
 
 import { addSession, setActiveSession } from "../../../actions/SessionActions";
@@ -160,8 +159,7 @@ const AddSession = (props) => {
               type="submit"
               className={`.button_primary ${classes.submitbtn}`}
             >
-              {loading ? <BtnSpinner /> : null}
-              {"ADD"}
+              {loading ? "Adding..." : "Add"}
             </button>
           </div>
         </form>
