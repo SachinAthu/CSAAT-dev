@@ -268,8 +268,6 @@ class AddVideo extends Component {
 
   // upload video
   upload = async (formData) => {
-    this.setState({ loading: true, progressBar: true });
-
     let url = "";
     if (
       localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL
@@ -330,6 +328,8 @@ class AddVideo extends Component {
     // validation
     const r = this.checkAllFields();
     if (!r) return;
+
+    this.setState({ loading: true, progressBar: true });
 
     let formData = new FormData();
     const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD);

@@ -79,7 +79,7 @@ class DeleteConfirmAlert extends Component {
     this.setState({ deleting: true });
 
     try {
-      var res = await axios.delete(`${BASE_URL}/delete-session/${sessionId}`);
+      var res = await axios.delete(`${BASE_URL}/delete-session/${sessionId}/`);
 
       this.setState({ deleting: false });
       this.setState({ isError: false });
