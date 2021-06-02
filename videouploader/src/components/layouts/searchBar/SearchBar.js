@@ -26,7 +26,7 @@ const SearchBar = (props) => {
       <input
         id="searchField"
         name="searchField"
-        placeholder="Search children..."
+        placeholder="Search records..."
         type="text"
         onChange={props.change}
       />

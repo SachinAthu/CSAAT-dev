@@ -6,10 +6,13 @@ import { connect } from "react-redux";
 import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
-import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 
 import { addChild, updateChild } from "../../../actions/ChildActions";
-import { CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES } from '../../../actions/Types'
+import {
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+  CHILD_TYPES,
+} from "../../../actions/Types";
+import { Fragment } from "react";
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
@@ -42,7 +45,7 @@ export class AddChild extends Component {
   }
 
   componentDidMount() {
-    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
 
     const c = this.props.child;
     if (c) {
@@ -112,28 +115,35 @@ export class AddChild extends Component {
     }
   };
 
-  checkAllFields = (unique_no, sequence_no, clinic_no, name, dob, gender, cdoc, dgform) => {
-    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+  checkAllFields = (
+    unique_no,
+    sequence_no,
+    clinic_no,
+    name,
+    dob,
+    gender,
+    cdoc,
+    dgform
+  ) => {
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
     var r1 = false,
-        r2 = false,
-        r3 = false,
-        r4 = false,
-        r5 = false,
-        r6 = false,
-        r7 = false,
-        r8 = false,
-        r9 = false,
-        r10 = false,
-        r11 = false,
-        r12 = false,
-        r13 = false,
-        r14 = false
+      r2 = false,
+      r3 = false,
+      r4 = false,
+      r5 = false,
+      r6 = false,
+      r7 = false,
+      r8 = false,
+      r9 = false,
+      r10 = false,
+      r11 = false,
+      r12 = false,
+      r13 = false,
+      r14 = false;
 
-    if(childType === CHILD_TYPES.TYPICAL){
+    if (childType === CHILD_TYPES.TYPICAL) {
       // unique_no
-      const unique_no_f = document.getElementById(
-        "child_add_form_unique_no"
-      );
+      const unique_no_f = document.getElementById("child_add_form_unique_no");
       const unique_no_e = document.getElementById(
         "child_add_form_unique_no_error"
       );
@@ -176,12 +186,9 @@ export class AddChild extends Component {
           "Maximum no of characters exceeded"
         );
       }
-
-    }else{
+    } else {
       // clinic_no
-      const clinic_no_f = document.getElementById(
-        "child_add_form_clinic_no"
-      );
+      const clinic_no_f = document.getElementById("child_add_form_clinic_no");
       const clinic_no_e = document.getElementById(
         "child_add_form_clinic_no_error"
       );
@@ -200,7 +207,6 @@ export class AddChild extends Component {
           "Maximum no of characters exceeded"
         );
       }
-
     }
 
     const name_f = document.getElementById("child_add_form_name");
@@ -226,7 +232,12 @@ export class AddChild extends Component {
     }
 
     // dob
-    r9 = this.checkFieldEmpty(dob, dob_f, dob_e, "Child's birth date is required");
+    r9 = this.checkFieldEmpty(
+      dob,
+      dob_f,
+      dob_e,
+      "Child's birth date is required"
+    );
 
     // gender
     r10 = this.checkFieldEmpty(
@@ -237,31 +248,72 @@ export class AddChild extends Component {
     );
 
     // cdoc
-    r11 = this.checkFieldEmpty(cdoc, cdoc_f, cdoc_e, 'Consent document is required')
+    r11 = this.checkFieldEmpty(
+      cdoc,
+      cdoc_f,
+      cdoc_e,
+      "Consent document is required"
+    );
     r12 = this.checkDocType(cdoc, cdoc_f, cdoc_e, "Document must be a PDF");
-    if(!r11 || !r12){
-      this.setState({cdocError: true})
-    }else {
-      this.setState({cdocError: false})
+    if (!r11 || !r12) {
+      this.setState({ cdocError: true });
+    } else {
+      this.setState({ cdocError: false });
     }
 
     // dgform
-    r13 = this.checkFieldEmpty(dgform, dgform_f, dgform_e, 'Data gathering form is required')
-    r14 = this.checkDocType(dgform, dgform_f, dgform_e, "Document must be a PDF");
-    if(!r13 || !r14){
-      this.setState({dgformError: true})
-    }else {
-      this.setState({dgformError: false})
+    r13 = this.checkFieldEmpty(
+      dgform,
+      dgform_f,
+      dgform_e,
+      "Data gathering form is required"
+    );
+    r14 = this.checkDocType(
+      dgform,
+      dgform_f,
+      dgform_e,
+      "Document must be a PDF"
+    );
+    if (!r13 || !r14) {
+      this.setState({ dgformError: true });
+    } else {
+      this.setState({ dgformError: false });
     }
 
-    if(childType === CHILD_TYPES.TYPICAL){
-      if (r1 && r2 && r3 && r4 && r7 && r8 && r9 && r10 && r11 && r12 && r13 && r14) {
+    if (childType === CHILD_TYPES.TYPICAL) {
+      if (
+        r1 &&
+        r2 &&
+        r3 &&
+        r4 &&
+        r7 &&
+        r8 &&
+        r9 &&
+        r10 &&
+        r11 &&
+        r12 &&
+        r13 &&
+        r14
+      ) {
         return true;
       } else {
         return false;
       }
-    }else{
-      if (r5 && r6 && r7 && r8 && r9 && r10 && r11 && r10 && r11 && r12 && r13 && r14) {
+    } else {
+      if (
+        r5 &&
+        r6 &&
+        r7 &&
+        r8 &&
+        r9 &&
+        r10 &&
+        r11 &&
+        r10 &&
+        r11 &&
+        r12 &&
+        r13 &&
+        r14
+      ) {
         return true;
       } else {
         return false;
@@ -272,16 +324,16 @@ export class AddChild extends Component {
   showError = (field, errorField, errorText) => {
     errorField.style.display = "block";
     errorField.innerHTML = errorText;
-    if(field) {
-      field.classList.add(`${classes.errorBorder}`)
+    if (field) {
+      field.classList.add(`${classes.errorBorder}`);
     }
   };
 
   removeError = (field, errorField) => {
     errorField.innerHTML = "";
     errorField.style.display = "none";
-    if(field) {
-      field.classList.remove(`${classes.errorBorder}`)
+    if (field) {
+      field.classList.remove(`${classes.errorBorder}`);
     }
   };
 
@@ -294,14 +346,12 @@ export class AddChild extends Component {
   ///////////////////////// event listners ////////////////////////////
   /////////////////////////////////////////////////////////////////////
   onChangeHandler = (e) => {
-    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
 
     switch (e.target.name) {
       case "unique_no":
-        if(childType === CHILD_TYPES.TYPICAL){
-          var field = document.getElementById(
-            "child_add_form_unique_no"
-          );
+        if (childType === CHILD_TYPES.TYPICAL) {
+          var field = document.getElementById("child_add_form_unique_no");
           var errorField = document.getElementById(
             "child_add_form_unique_no_error"
           );
@@ -324,10 +374,8 @@ export class AddChild extends Component {
         break;
 
       case "sequence_no":
-        if(childType === CHILD_TYPES.TYPICAL){
-          var field = document.getElementById(
-            "child_add_form_sequence_no"
-          );
+        if (childType === CHILD_TYPES.TYPICAL) {
+          var field = document.getElementById("child_add_form_sequence_no");
           var errorField = document.getElementById(
             "child_add_form_sequence_no_error"
           );
@@ -350,10 +398,8 @@ export class AddChild extends Component {
         break;
 
       case "clinic_no":
-        if(childType === CHILD_TYPES.ANTYPICAL){
-          var field = document.getElementById(
-            "child_add_form_clinic_no"
-          );
+        if (childType === CHILD_TYPES.ANTYPICAL) {
+          var field = document.getElementById("child_add_form_clinic_no");
           var errorField = document.getElementById(
             "child_add_form_clinic_no_error"
           );
@@ -428,12 +474,17 @@ export class AddChild extends Component {
   onCDocChangeHandler = (file) => {
     var field = document.getElementById("child_add_form_cdoc");
     var errorField = document.getElementById("child_add_form_cdoc_error");
-    var r = this.checkDocType(file, field, errorField, "Document must be a PDF");
+    var r = this.checkDocType(
+      file,
+      field,
+      errorField,
+      "Document must be a PDF"
+    );
 
-    if(!r) {
-      this.setState({ cdocError: true })
-    }else {
-      this.setState({ cdocError: false })
+    if (!r) {
+      this.setState({ cdocError: true });
+    } else {
+      this.setState({ cdocError: false });
     }
 
     this.setState({
@@ -445,12 +496,17 @@ export class AddChild extends Component {
   onDGFormChangeHandler = (file) => {
     var field = document.getElementById("child_add_form_dgform");
     var errorField = document.getElementById("child_add_form_dgform_error");
-    var r = this.checkDocType(file, field, errorField, "Document must be a PDF");
+    var r = this.checkDocType(
+      file,
+      field,
+      errorField,
+      "Document must be a PDF"
+    );
 
-    if(!r) {
-      this.setState({ dgformError: true })
-    }else {
-      this.setState({ dgformError: false })
+    if (!r) {
+      this.setState({ dgformError: true });
+    } else {
+      this.setState({ dgformError: false });
     }
 
     this.setState({
@@ -461,7 +517,7 @@ export class AddChild extends Component {
 
   onSubmitHandler = (e) => {
     e.preventDefault();
-    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
 
     const {
       unique_no,
@@ -479,7 +535,16 @@ export class AddChild extends Component {
     const female = document.getElementById("child_add_form_f");
 
     // validation
-    const r = this.checkAllFields(unique_no, sequence_no, clinic_no, name, dob, gender, cdoc, dgform);
+    const r = this.checkAllFields(
+      unique_no,
+      sequence_no,
+      clinic_no,
+      name,
+      dob,
+      gender,
+      cdoc,
+      dgform
+    );
     if (!r) {
       return;
     }
@@ -512,19 +577,19 @@ export class AddChild extends Component {
     let url = "";
     let method = "";
 
-    if(childType === CHILD_TYPES.TYPICAL){
+    if (childType === CHILD_TYPES.TYPICAL) {
       if (this.state.editing) {
         url = `http://localhost:8000/api/update-t-child/${this.state.id}/`;
         method = "PUT";
-      }else{
+      } else {
         url = "http://localhost:8000/api/add-t-child/";
         method = "POST";
       }
-    }else{
+    } else {
       if (this.state.editing) {
         url = `http://localhost:8000/api/update-at-child/${this.state.id}/`;
         method = "PUT";
-      }else{
+      } else {
         url = "http://localhost:8000/api/add-at-child/";
         method = "POST";
       }
@@ -546,7 +611,7 @@ export class AddChild extends Component {
         } else {
           this.props.addChild(res.data);
         }
-        this.props.close()
+        this.props.close();
       })
       .catch((err) => {
         this.setState({ requesting: false });
@@ -598,18 +663,19 @@ export class AddChild extends Component {
     }
 
     // reset errors
-    const errorFields = document.getElementsByClassName(`${classes.fieldError}`)
-    for(let i = 0; i < errorFields.length; i++) {
+    const errorFields = document.getElementsByClassName(
+      `${classes.fieldError}`
+    );
+    for (let i = 0; i < errorFields.length; i++) {
       errorFields[i].innerHTML = "";
       errorFields[i].style.display = "none";
     }
-    const formGroups = document.getElementsByClassName(`${classes.formgroup}`)
-    for(let i = 0; i < formGroups.length; i++) {
-      formGroups[i].children[1].classList.remove(`${classes.errorBorder}`)
+    const formGroups = document.getElementsByClassName(`${classes.formgroup}`);
+    for (let i = 0; i < formGroups.length; i++) {
+      formGroups[i].children[1].classList.remove(`${classes.errorBorder}`);
     }
 
-    this.setState({ cdocError: false, dgformError: false })
-   
+    this.setState({ cdocError: false, dgformError: false });
   };
 
   render() {
@@ -626,11 +692,11 @@ export class AddChild extends Component {
       editing,
       requesting,
     } = this.state;
-    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
 
     return (
       <ModalFrame close={this.props.close}>
-        <div className={classes.container} style={{width: '34rem'}}>
+        <div className={classes.container} style={{ width: "34rem" }}>
           <h4>{editing ? "Edit Child" : "New Child"}</h4>
 
           <form className={classes.form} onSubmit={this.onSubmitHandler}>
@@ -788,13 +854,12 @@ export class AddChild extends Component {
                 Reset
               </button>
 
-              <button
-                type="submit"
-                className={classes.submitbtn}
-              >
-                {requesting ? <BtnSpinner /> : null}
-
-                {editing ? "EDIT" : "ADD"}
+              <button type="submit" className={classes.submitbtn}>
+                {requesting ? (
+                  <Fragment>{editing ? "Editing..." : "Adding..."}</Fragment>
+                ) : (
+                  <Fragment>{editing ? "Edit" : "Add"}</Fragment>
+                )}
               </button>
             </div>
           </form>

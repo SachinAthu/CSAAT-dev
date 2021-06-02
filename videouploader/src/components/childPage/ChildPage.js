@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import classes from "./ChildPage.module.css";
 import EmptySVG from "../../assets/svg/empty.svg";
 import Breadcrumbs from "../layouts/breadcrumbs/Breadcrumbs";
-import BtnSpinner from "../layouts/spinners/btn/BtnSpinner";
 import AddSession from "../modals/addSession/AddSession";
 import { BASE_URL } from "../../config";
 import VideoPlay from "./videoPlay/VideoPlay";
@@ -238,7 +237,6 @@ class ChildPage extends Component {
               className={`button_primary ${classes.addbtn}`}
               onClick={this.addSessionHandler}
             >
-              {this.state.loadingNewBtn ? <BtnSpinner /> : null}
               New Session
             </button>
           </div>

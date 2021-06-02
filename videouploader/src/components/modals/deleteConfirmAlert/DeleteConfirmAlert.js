@@ -4,7 +4,6 @@ import axios from "axios";
 import { connect } from "react-redux";
 
 import classes from "./DeleteConfirmAlert.module.css";
-import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import ModalFrame from "../modalFrame/ModalFrame";
 import { BASE_URL } from "../../../config";
 
@@ -80,7 +79,7 @@ class DeleteConfirmAlert extends Component {
     this.setState({ deleting: true });
 
     try {
-      var res = await axios.delete(`${BASE_URL}/delete-session/${sessionId}`);
+      var res = await axios.delete(`${BASE_URL}/delete-session/${sessionId}/`);
 
       this.setState({ deleting: false });
       this.setState({ isError: false });
@@ -258,8 +257,7 @@ class DeleteConfirmAlert extends Component {
               className={`.button_primary ${classes.deletebtn}`}
               onClick={this.deleteHandler}
             >
-              {this.state.deleting ? <BtnSpinner /> : null}
-              Delete
+              {this.state.deleting ? "Deleting..." : "Delete"}
             </button>
 
             <button

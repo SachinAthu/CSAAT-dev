@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from "axios";
 
 import classes from "./DeleteConfirmAlert.module.css";
-import BtnSpinner from "../../layout/spinners/btn/BtnSpinner";
 import ModalFrame from "../modalFrame/ModalFrame";
 import { BASE_URL } from "../../../config";
 
@@ -15,25 +14,35 @@ class DeleteConfirmAlert extends Component {
     };
   }
 
-  deleteVideoClip = () => {
+  deleteVideoClip = async () => {
     this.setState({ deleting: true });
+    
+    try{
+      var res = await axios.delete(`${BASE_URL}/delete-video-clip/${this.props.video_clip_id}/`)
+      this.setState({ deleting: false });
+      this.setState({ isError: false });
 
-    axios.delete(`${BASE_URL}/delete-video-clip/${this.props.id}/`)
-      .then((res) => {
-        this.setState({ deleting: false });
-        this.setState({ isError: false });
-        setTimeout(() => {
-          this.props.close(true);
-        }, 1000);
+      // update video record
+      res = await axios(`${BASE_URL}/update-video/${this.props.video_id}/`, {
+      method: 'PUT',
+      data: {
+        "sliced": false
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
       })
-      .catch((err) => {
-        // console.log(err)
-        this.setState({ deleting: false });
-        this.setState({ isError: true });
-        setTimeout(() => {
-          this.props.close(false);
-        }, 1000);
-      });
+      setTimeout(() => {
+        this.props.close(true);
+      }, 1000);
+    }catch(err){
+      // console.log(err)
+      this.setState({ deleting: false });
+      this.setState({ isError: true });
+      setTimeout(() => {
+        this.props.close(false);
+      }, 1000);
+    }
 
   };
 
@@ -54,8 +63,7 @@ class DeleteConfirmAlert extends Component {
               className={`.button_primary ${classes.deletebtn}`}
               onClick={this.deleteVideoClip}
             >
-              {this.state.deleting ? <BtnSpinner /> : null}
-              Delete
+              {this.state.deleting ? "Deleting..." : "Delete"}
             </button>
 
             <button

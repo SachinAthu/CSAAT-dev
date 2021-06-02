@@ -4,7 +4,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
-MEDIA_ROOT = '/media/sachin/Storage Drive/csaat_storage'
+MEDIA_ROOT = 'C:\\Users\\sachi\\csaat_storage'
 MEDIA_URL = ''
 
 
@@ -85,8 +85,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'csaat',
-        'USER': 'sma',
-        'PASSWORD': '12345',
+        'USER': 'root',
+        'PASSWORD': 'shiba123',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
